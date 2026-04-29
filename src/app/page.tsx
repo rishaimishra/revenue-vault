@@ -1,65 +1,101 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Shield, Zap, Globe, Lock, BarChart3, TrendingUp } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="bg-white">
+      {/* Hero Section */}
+      <section className="px-6 py-20 md:py-32 max-w-7xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-widest mb-6">
+            <Zap className="w-3 h-3 fill-blue-700" /> The Modern Startup Marketplace
+          </div>
+          <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 tracking-tight">
+            Buy and Sell Startups <br className="hidden md:block" />
+            <span className="text-blue-600 italic">With Total Anonymity.</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+            RevenueVault is the most secure platform to exit your startup or acquire your next venture. Verified financials, escrow-ready deals, and private communication.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/marketplace"
+              className="w-full sm:w-auto bg-gray-900 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
+            >
+              Explore Marketplace <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              href="/onboarding"
+              className="w-full sm:w-auto bg-white border border-gray-200 text-gray-900 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all"
+            >
+              List Your Startup
+            </Link>
+          </div>
+
+          {/* Social Proof Placeholder */}
+          <div className="mt-20 pt-10 border-t border-gray-100">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">Trusted by founders from</p>
+            <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-30 grayscale">
+              <div className="text-2xl font-black">STRIPE</div>
+              <div className="text-2xl font-black">VERCEL</div>
+              <div className="text-2xl font-black">PRISMA</div>
+              <div className="text-2xl font-black">AWS</div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="bg-gray-50 py-24 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              <div className="space-y-4">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600">
+                  <Lock className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Privacy First</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Sell your startup without alerting your competitors or employees. Your identity is hidden until you approve a buyer.
+                </p>
+              </div>
+              <div className="space-y-4">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600">
+                  <BarChart3 className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Verified Data</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  We verify revenue and profit claims before a listing goes live, reducing the risk of fraud and wasted time.
+                </p>
+              </div>
+              <div className="space-y-4">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600">
+                  <TrendingUp className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Smart Deal Flow</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Manage the entire acquisition process in one dashboard. From initial interest to due diligence and closing.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-24 px-6 max-w-5xl mx-auto text-center">
+          <div className="bg-blue-600 rounded-[3rem] p-12 md:p-20 text-white overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full -mr-20 -mt-20 opacity-50 blur-3xl"></div>
+            <div className="relative z-10">
+              <h2 className="text-3xl md:text-5xl font-extrabold mb-6 leading-tight">Ready to find your <br /> next startup venture?</h2>
+              <p className="text-blue-100 text-lg mb-10 max-w-xl mx-auto font-medium">
+                Join 5,000+ founders and investors already using RevenueVault to browse, buy, and sell digital assets.
+              </p>
+              <Link
+                href="/onboarding"
+                className="bg-white text-blue-600 px-10 py-4 rounded-2xl font-bold text-xl hover:bg-blue-50 transition-all inline-block shadow-xl shadow-blue-900/20"
+              >
+                Start for Free
+              </Link>
+            </div>
+          </div>
+        </section>
     </div>
   );
 }

@@ -1,0 +1,57 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const dealId = params.id;
+    const body = await req.json();
+    const { status } = body;
+
+    // Verify deal exists and user is the seller
+    const deal = await prisma.deal.findUnique({
+      where: { id: dealId },
+      include: {
+        listing: {
+          select: { sellerId: true }
+        }
+      }
+    });
+
+    if (!deal) {
+      return new NextResponse("Deal not found", { status: 404 });
+    }
+
+    if (deal.listing.sellerId !== session.user.id) {
+      return new NextResponse("Forbidden", { status: 403 });
+    }
+
+    const updatedDeal = await prisma.deal.update({
+      where: { id: dealId },
+      data: { status },
+    });
+
+    // If deal is closed, mark the listing as SOLD
+    if (status === "CLOSED") {
+      await prisma.startupListing.update({
+        where: { id: deal.listingId },
+        data: { status: "SOLD" }
+      });
+    }
+
+    return NextResponse.json(updatedDeal);
+  } catch (error) {
+    console.error("[DEAL_PATCH]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}

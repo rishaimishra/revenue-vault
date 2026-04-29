@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest *)",
+      "Bash(mv revenue-vault/* .)",
+      "Bash(mv revenue-vault/.* .)",
+      "Bash(rm -rf revenue-vault)",
+      "Bash(npm install *)",
+      "Bash(npx prisma *)",
+      "Bash(mv \"src/app/listings/[id/]\" \"src/app/listings/temp_id\")",
+      "Bash(rm -rf \"src/app/listings/[id]\" \"src/app/listings/[id\")",
+      "Bash(mv \"src/app/listings/temp_id\" \"src/app/listings/[id]\")",
+      "Bash(mv \"src/app/api/admin/listings/[id/]\" \"src/app/api/admin/listings/temp_id\")",
+      "Bash(rm -rf \"src/app/api/admin/listings/[id]\" \"src/app/api/admin/listings/[id\")",
+      "Bash(mv \"src/app/api/admin/listings/temp_id\" \"src/app/api/admin/listings/[id]\")",
+      "Bash(mv \"src/app/api/admin/users/[id/]\" \"src/app/api/admin/users/temp_id\")",
+      "Bash(rm -rf \"src/app/api/admin/users/[id]\" \"src/app/api/admin/users/[id\")",
+      "Bash(mv \"src/app/api/admin/users/temp_id\" \"src/app/api/admin/users/[id]\")",
+      "Bash(mkdir -p \"src/app/api/admin/users/[id]/role\" \"src/app/api/admin/users/[id]/verify\")",
+      "Bash(mv \"src/app/api/admin/users/[id/]/role/route.ts\" \"src/app/api/admin/users/[id]/role/route.ts\")",
+      "Bash(mv \"src/app/api/admin/users/[id/]/verify/route.ts\" \"src/app/api/admin/users/[id]/verify/route.ts\")",
+      "Bash(rm -rf \"src/app/api/admin/users/[id/]\" \"src/app/api/admin/users/[id\")"
+    ]
+  }
+}
