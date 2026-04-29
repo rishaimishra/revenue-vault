@@ -63,7 +63,7 @@ export default async function SellerDashboardPage() {
     redirect("/api/auth/signin");
   }
 
-  const { listings, pendingRequests, activeDeals } = await getSellerData(session.user.id);
+  const { listings, pendingRequests, activeDeals } = await getSellerData((session.user as any).id);
 
   return (
     <div className="container mx-auto px-4 py-10">

@@ -59,8 +59,7 @@ export const Navbar = () => {
             {session ? (
               <>
                 {/* Role-based Dashboard Links */}
-                {/* @ts-ignore */}
-                {session.user.role === 'ADMIN' && (
+                {(session.user as any).role === 'ADMIN' && (
                   <Link
                     href="/admin"
                     className={`text-sm font-bold transition-colors flex items-center gap-1.5 ${
@@ -70,8 +69,7 @@ export const Navbar = () => {
                     <ShieldCheck className="w-4 h-4" /> Admin
                   </Link>
                 )}
-                {/* @ts-ignore */}
-                {session.user.role === 'SELLER' ? (
+                {(session.user as any).role === 'SELLER' ? (
                   <Link
                     href="/dashboard/seller"
                     className={`text-sm font-bold transition-colors flex items-center gap-1.5 ${
@@ -137,12 +135,10 @@ export const Navbar = () => {
           <Link href="/about" onClick={toggleMenu} className="block text-lg font-bold text-gray-900">How it Works</Link>
           {session ? (
             <>
-              {/* @ts-ignore */}
-              {session.user.role === 'ADMIN' && (
+              {(session.user as any).role === 'ADMIN' && (
                 <Link href="/admin" onClick={toggleMenu} className="block text-lg font-bold text-purple-600">Admin Panel</Link>
               )}
-              {/* @ts-ignore */}
-              <Link href={session.user.role === 'SELLER' ? "/dashboard/seller" : "/dashboard/buyer"} onClick={toggleMenu} className="block text-lg font-bold text-gray-900">Dashboard</Link>
+              <Link href={(session.user as any).role === 'SELLER' ? "/dashboard/seller" : "/dashboard/buyer"} onClick={toggleMenu} className="block text-lg font-bold text-gray-900">Dashboard</Link>
               <Link href="/profile" onClick={toggleMenu} className="block text-lg font-bold text-gray-900">Profile</Link>
               <button
                 onClick={() => signOut()}

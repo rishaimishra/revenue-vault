@@ -5,16 +5,15 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: listingId } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-
-    const listingId = params.id;
 
     // Verify listing exists and user is the owner
     const listing = await prisma.startupListing.findUnique({
@@ -25,7 +24,7 @@ export async function POST(
       return new NextResponse("Listing not found", { status: 404 });
     }
 
-    if (listing.sellerId !== session.user.id) {
+    if (listing.sellerId !== (session.user as any).id) {
       return new NextResponse("Forbidden", { status: 403 });
     }
 
@@ -40,7 +39,7 @@ export async function POST(
     // Record the payment
     await prisma.payment.create({
       data: {
-        userId: session.user.id,
+        userId: (session.user as any).id,
         amount: 29.00, // Featured listing fee
         currency: "USD",
         provider: "SIMULATED",

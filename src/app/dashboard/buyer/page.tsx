@@ -53,7 +53,7 @@ export default async function BuyerDashboardPage() {
     redirect("/api/auth/signin");
   }
 
-  const { bookmarks, accessRequests, activeDeals } = await getBuyerData(session.user.id);
+  const { bookmarks, accessRequests, activeDeals } = await getBuyerData((session.user as any).id);
 
   return (
     <div className="container mx-auto px-4 py-10">

@@ -90,6 +90,9 @@ model User {
   // Deal relations
   dealsAsBuyer     Deal[] @relation("BuyerDeals")
 
+  // Payments
+  payments         Payment[]
+
   // Subscription
   isSubscribed     Boolean  @default(false)
   subscriptionTier String?  @default("FREE")
@@ -207,6 +210,7 @@ model Report {
 model Payment {
   id            String   @id @default(cuid())
   userId        String
+  user          User     @relation(fields: [userId], references: [id])
   amount        Float
   currency      String   @default("INR")
   provider      String   // Stripe or Razorpay

@@ -42,20 +42,21 @@ async function getDeal(id: string, userId: string) {
   return deal;
 }
 
-export default async function MessagePage({ params }: { params: { id: string } }) {
+export default async function MessagePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user) {
     redirect("/api/auth/signin");
   }
 
-  const deal = await getDeal(params.id, session.user.id);
+  const deal = await getDeal(id, (session.user as any).id);
 
   if (!deal) {
     notFound();
   }
 
-  const isSeller = deal.listing.sellerId === session.user.id;
+  const isSeller = deal.listing.sellerId === (session.user as any).id;
   const otherParty = isSeller ? deal.buyer : deal.listing.seller;
   const receiverId = isSeller ? deal.buyerId : deal.listing.sellerId;
 

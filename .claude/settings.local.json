@@ -19,7 +19,20 @@
       "Bash(mkdir -p \"src/app/api/admin/users/[id]/role\" \"src/app/api/admin/users/[id]/verify\")",
       "Bash(mv \"src/app/api/admin/users/[id/]/role/route.ts\" \"src/app/api/admin/users/[id]/role/route.ts\")",
       "Bash(mv \"src/app/api/admin/users/[id/]/verify/route.ts\" \"src/app/api/admin/users/[id]/verify/route.ts\")",
-      "Bash(rm -rf \"src/app/api/admin/users/[id/]\" \"src/app/api/admin/users/[id\")"
+      "Bash(rm -rf \"src/app/api/admin/users/[id/]\" \"src/app/api/admin/users/[id\")",
+      "Bash(mv \"src/app/api/access-requests/[id/]\" \"src/app/api/access-requests/temp_id\")",
+      "Bash(rm -rf \"src/app/api/access-requests/[id]\")",
+      "Bash(mv \"src/app/api/access-requests/temp_id\" \"src/app/api/access-requests/[id]\")",
+      "Bash(mv \"src/app/api/deals/[id/]\" \"src/app/api/deals/temp_id\")",
+      "Bash(rm -rf \"src/app/api/deals/[id]\")",
+      "Bash(mv src/app/api/listings/[id]/access/access/route.ts src/app/api/listings/[id]/access/route.ts)",
+      "Bash(mv src/app/api/listings/[id]/feature/feature/route.ts src/app/api/listings/[id]/feature/route.ts)",
+      "Bash(rm -rf src/app/api/listings/[id]/access/access src/app/api/listings/[id]/feature/feature)",
+      "Bash(rm -rf \"src/app/api/listings/[id\")",
+      "Bash(mv \"src/app/messages/[id/]\" \"src/app/messages/temp_id\")",
+      "Bash(rm -rf \"src/app/messages/[id]\")",
+      "Bash(mv \"src/app/messages/temp_id\" \"src/app/messages/[id]\")",
+      "Bash(npm run *)"
     ]
   }
 }

@@ -1,10 +1,11 @@
 "use client";
 
 import { StartupListing } from "@prisma/client";
-import { DollarSign, BarChart2, TrendingUp, Bookmark, Loader2 } from "lucide-react";
+import { DollarSign, BarChart2, TrendingUp, Bookmark, Loader2, Zap } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface ListingCardProps {
   listing: StartupListing & {
@@ -17,13 +18,19 @@ interface ListingCardProps {
 }
 
 export const ListingCard = ({ listing, isBookmarked: initialIsBookmarked }: ListingCardProps) => {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const handleBookmark = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!session) {
+      router.push("/auth/signin");
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -36,17 +43,25 @@ export const ListingCard = ({ listing, isBookmarked: initialIsBookmarked }: List
       if (response.ok) {
         const data = await response.json();
         setIsBookmarked(data.bookmarked);
-        router.refresh();
       }
     } catch (error) {
-      console.error("Bookmark error:", error);
+      console.error("Error bookmarking:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col gap-4 relative group">
+    <div className={`rounded-lg border shadow-sm hover:shadow-md transition-all p-6 flex flex-col gap-4 relative group ${
+      listing.isFeatured
+        ? "border-blue-500 bg-blue-50/30 ring-2 ring-blue-500/10"
+        : "bg-white border-gray-200"
+    }`}>
+      {listing.isFeatured && (
+        <div className="absolute -top-3 left-6 bg-blue-600 text-white text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-widest flex items-center gap-1 shadow-lg z-20">
+          <Zap className="w-3 h-3 fill-white" /> Featured
+        </div>
+      )}
       <div className="flex justify-between items-start">
         <div>
           <h3 className="text-xl font-bold text-gray-900 line-clamp-1 group-hover:text-blue-600 transition-colors">

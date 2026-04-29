@@ -2,9 +2,10 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { AdminListingActions } from "@/components/admin/AdminListingActions";
 import { AdminUserActions } from "@/components/admin/AdminUserActions";
-import { ShieldCheck, LayoutDashboard, Users, FileText, AlertCircle } from "lucide-react";
+import { ShieldCheck, LayoutDashboard, Users, FileText, AlertCircle, DollarSign } from "lucide-react";
 
 async function getAdminData() {
   const pendingListings = await prisma.startupListing.findMany({
@@ -188,7 +189,7 @@ export default async function AdminPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <AdminUserActions userId={user.id} isVerified={user.isVerified} />
+                      <AdminUserActions userId={user.id} isVerified={user.isVerified} currentRole={user.role} />
                     </td>
                   </tr>
                 ))}

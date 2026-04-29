@@ -5,16 +5,15 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: listingId } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-
-    const listingId = params.id;
 
     // Check if listing exists
     const listing = await prisma.startupListing.findUnique({
@@ -26,7 +25,7 @@ export async function POST(
     }
 
     // Don't allow seller to request access to their own listing
-    if (listing.sellerId === session.user.id) {
+    if (listing.sellerId === (session.user as any).id) {
       return new NextResponse("You cannot request access to your own listing", { status: 400 });
     }
 
@@ -35,13 +34,13 @@ export async function POST(
       where: {
         listingId_buyerId: {
           listingId,
-          buyerId: session.user.id,
+          buyerId: (session.user as any).id,
         },
       },
       update: {},
       create: {
         listingId,
-        buyerId: session.user.id,
+        buyerId: (session.user as any).id,
         status: "PENDING",
       },
     });

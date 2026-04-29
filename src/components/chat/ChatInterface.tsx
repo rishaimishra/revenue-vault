@@ -111,7 +111,7 @@ export const ChatInterface = ({ dealId, receiverId, initialMessages }: ChatInter
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.map((msg) => {
-          const isMe = msg.senderId === session?.user?.id;
+          const isMe = msg.senderId === (session?.user as any)?.id;
           return (
             <div key={msg.id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
               <div className={`max-w-[70%] flex gap-3 ${isMe ? "flex-row-reverse" : "flex-row"}`}>

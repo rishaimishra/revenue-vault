@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     }
 
     // @ts-ignore
-    if (session.user.role !== "SELLER" && session.user.role !== "ADMIN") {
+    if ((session.user as any).role !== "SELLER" && (session.user as any).role !== "ADMIN") {
       return new NextResponse("Only sellers can create listings", { status: 403 });
     }
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const listing = await prisma.startupListing.create({
       data: {
         ...validatedData,
-        sellerId: session.user.id,
+        sellerId: (session.user as any).id,
         status: "PENDING_APPROVAL", // MVP requirement: Listing approval before publishing
       },
     });
@@ -71,9 +71,10 @@ export async function GET(req: Request) {
 
     const listings = await prisma.startupListing.findMany({
       where,
-      orderBy: {
-        [sortBy]: sortOrder,
-      },
+      orderBy: [
+        { isFeatured: "desc" },
+        { [sortBy]: sortOrder },
+      ],
       include: {
         seller: {
           select: {

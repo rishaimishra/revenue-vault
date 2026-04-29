@@ -27,7 +27,7 @@ export default async function ProfilePage() {
     redirect("/api/auth/signin");
   }
 
-  const user = await getUserData(session.user.id);
+  const user = await getUserData((session.user as any).id);
 
   if (!user) {
     redirect("/");

@@ -32,8 +32,8 @@ export async function POST(req: Request) {
       return new NextResponse("Deal not found", { status: 404 });
     }
 
-    const isSeller = deal.listing.sellerId === session.user.id;
-    const isBuyer = deal.buyerId === session.user.id;
+    const isSeller = deal.listing.sellerId === (session.user as any).id;
+    const isBuyer = deal.buyerId === (session.user as any).id;
 
     if (!isSeller && !isBuyer) {
       return new NextResponse("Forbidden", { status: 403 });
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     const message = await prisma.message.create({
       data: {
         content,
-        senderId: session.user.id,
+        senderId: (session.user as any).id,
         receiverId,
         dealId,
       },
@@ -90,7 +90,7 @@ export async function GET(req: Request) {
       return new NextResponse("Deal not found", { status: 404 });
     }
 
-    if (deal.listing.sellerId !== session.user.id && deal.buyerId !== session.user.id) {
+    if (deal.listing.sellerId !== (session.user as any).id && deal.buyerId !== (session.user as any).id) {
       return new NextResponse("Forbidden", { status: 403 });
     }
 

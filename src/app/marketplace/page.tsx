@@ -26,19 +26,19 @@ async function getListings(searchParams: { [key: string]: string | string[] | un
         },
       },
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: [
+      { isFeatured: "desc" },
+      { createdAt: "desc" },
+    ],
   });
 
   return listings;
 }
 
-export default async function MarketplacePage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
+export default async function MarketplacePage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const searchParams = await props.searchParams;
   const listings = await getListings(searchParams);
 
   const categories = [

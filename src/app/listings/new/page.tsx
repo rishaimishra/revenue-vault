@@ -16,7 +16,7 @@ export default function NewListingPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ListingInput>({
+  } = useForm({
     resolver: zodResolver(listingSchema),
     defaultValues: {
       title: "",
@@ -28,7 +28,7 @@ export default function NewListingPage() {
     },
   });
 
-  const onSubmit = async (data: ListingInput) => {
+  const onSubmit = async (data: any) => {
     setIsLoading(true);
     setError(null);
 

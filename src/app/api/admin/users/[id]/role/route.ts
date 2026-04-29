@@ -5,16 +5,16 @@ import { prisma } from "@/lib/prisma";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: userId } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user || (session.user as any).role !== "ADMIN") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const userId = params.id;
     const body = await req.json();
     const { role } = body;
 

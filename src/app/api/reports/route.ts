@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       data: {
         listingId,
         reason,
-        userId: session.user.id,
+        userId: (session.user as any).id,
       },
     });
 

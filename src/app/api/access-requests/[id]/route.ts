@@ -5,16 +5,16 @@ import { prisma } from "@/lib/prisma";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: requestId } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const requestId = params.id;
     const body = await req.json();
     const { status } = body;
 
@@ -39,7 +39,7 @@ export async function PATCH(
       return new NextResponse("Request not found", { status: 404 });
     }
 
-    if (accessRequest.listing.sellerId !== session.user.id) {
+    if (accessRequest.listing.sellerId !== (session.user as any).id) {
       return new NextResponse("Forbidden", { status: 403 });
     }
 

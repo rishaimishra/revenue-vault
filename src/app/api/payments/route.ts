@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     // Record the payment
     const payment = await prisma.payment.create({
       data: {
-        userId: session.user.id,
+        userId: (session.user as any).id,
         amount,
         currency: "USD",
         provider: "SIMULATED",
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     // If it's a subscription, update user's status
     if (type === "subscription") {
       await prisma.user.update({
-        where: { id: session.user.id },
+        where: { id: (session.user as any).id },
         data: {
           isSubscribed: true,
           subscriptionTier: tier || "PRO",

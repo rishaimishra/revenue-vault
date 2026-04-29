@@ -5,18 +5,16 @@ import { prisma } from "@/lib/prisma";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: listingId } = await params;
     const session = await getServerSession(authOptions);
 
-    // MVP Simple Check: In a real app, check user.role === 'ADMIN'
-    // For now, I'll assume the session user must be checked against a specific email or role
     if (!session || !session.user || (session.user as any).role !== "ADMIN") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const listingId = params.id;
     const body = await req.json();
     const { status } = body; // PUBLISHED or REJECTED
 

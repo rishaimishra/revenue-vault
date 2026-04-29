@@ -25,18 +25,19 @@ async function getListing(id: string) {
   return listing;
 }
 
-export default async function ListingDetailPage({ params }: { params: { id: string } }) {
+export default async function ListingDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
-  const listing = await getListing(params.id);
+  const listing = await getListing(id);
 
   if (!listing) {
     notFound();
   }
 
   // Check if current user is seller or admin
-  const isSeller = session?.user?.id === listing.sellerId;
+  const isSeller = session?.user && (session.user as any).id === listing.sellerId;
   // @ts-ignore
-  const isAdmin = session?.user?.role === "ADMIN";
+  const isAdmin = session?.user && (session.user as any).role === "ADMIN";
 
   // Protection: If not published, only seller or admin can see it
   if (listing.status !== "PUBLISHED" && !isSeller && !isAdmin) {
@@ -49,7 +50,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
         where: {
           listingId_buyerId: {
             listingId: listing.id,
-            buyerId: session.user.id,
+            buyerId: (session.user as any).id,
           },
         },
       })

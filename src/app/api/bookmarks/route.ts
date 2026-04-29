@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     const existing = await prisma.bookmark.findUnique({
       where: {
         userId_listingId: {
-          userId: session.user.id,
+          userId: (session.user as any).id,
           listingId,
         },
       },
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     } else {
       await prisma.bookmark.create({
         data: {
-          userId: session.user.id,
+          userId: (session.user as any).id,
           listingId,
         },
       });
@@ -57,7 +57,7 @@ export async function GET(req: Request) {
     }
 
     const bookmarks = await prisma.bookmark.findMany({
-      where: { userId: session.user.id },
+      where: { userId: (session.user as any).id },
       include: {
         listing: {
           include: {
