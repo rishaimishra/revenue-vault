@@ -6,18 +6,20 @@ import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { listingSchema, ListingInput } from "@/lib/validations";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export default function NewListingPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [error, setError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: zodResolver(listingSchema),
     defaultValues: {
@@ -49,6 +51,7 @@ export default function NewListingPage() {
 
     setIsLoading(true);
     setError(null);
+    setIsSuccess(false);
 
     try {
       const response = await fetch("/api/listings", {
@@ -65,8 +68,14 @@ export default function NewListingPage() {
         throw new Error(result.message || "Failed to create listing");
       }
 
-      router.push("/marketplace");
-      router.refresh();
+      setIsSuccess(true);
+      reset();
+
+      // Delay redirection to show success message
+      setTimeout(() => {
+        router.push("/dashboard/seller");
+        router.refresh();
+      }, 2000);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -127,8 +136,21 @@ export default function NewListingPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm font-medium">
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm font-medium flex items-center gap-2">
+            <AlertCircle className="w-4 h-4" />
             {error}
+          </div>
+        )}
+
+        {isSuccess && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-4 rounded-md text-sm font-medium flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-green-600" />
+              <span className="text-base">Listing submitted successfully!</span>
+            </div>
+            <p className="text-green-600 ml-7">
+              Your startup is now pending approval. Redirecting to your dashboard...
+            </p>
           </div>
         )}
 

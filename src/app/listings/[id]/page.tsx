@@ -122,64 +122,87 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
 
         {/* Sidebar */}
         <div className="w-full md:w-80 lg:w-96 space-y-6">
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
-            <div className="space-y-4">
-              <h3 className="font-bold text-gray-900 text-lg">Interested in this deal?</h3>
-              <p className="text-sm text-gray-600">
-                You need to request access to message the seller and view sensitive details.
-              </p>
+          {!isSeller && (
+            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
+              <div className="space-y-4">
+                <h3 className="font-bold text-gray-900 text-lg">Interested in this deal?</h3>
+                <p className="text-sm text-gray-600">
+                  You need to request access to message the seller and view sensitive details.
+                </p>
 
-              {!session ? (
-                <Link
-                  href="/auth/signin"
-                  className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors block text-center"
-                >
-                  Sign in to Request Access
-                </Link>
-              ) : accessRequest?.status === "PENDING" ? (
-                <button className="w-full bg-gray-100 text-gray-500 font-bold py-3 px-4 rounded-lg cursor-not-allowed" disabled>
-                  Access Request Pending
-                </button>
-              ) : accessRequest?.status === "APPROVED" ? (
-                <Link
-                  href={`/messages/${listing.id}`}
-                  className="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors block text-center"
-                >
-                  Open Conversation
-                </Link>
-              ) : (
-                <RequestAccessButton listingId={listing.id} />
-              )}
-            </div>
+                {!session ? (
+                  <Link
+                    href="/auth/signin"
+                    className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors block text-center"
+                  >
+                    Sign in to Request Access
+                  </Link>
+                ) : accessRequest?.status === "PENDING" ? (
+                  <button className="w-full bg-gray-100 text-gray-500 font-bold py-3 px-4 rounded-lg cursor-not-allowed" disabled>
+                    Access Request Pending
+                  </button>
+                ) : accessRequest?.status === "APPROVED" ? (
+                  <Link
+                    href={`/messages/${listing.id}`}
+                    className="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors block text-center"
+                  >
+                    Open Conversation
+                  </Link>
+                ) : (
+                  <RequestAccessButton listingId={listing.id} />
+                )}
+              </div>
 
-            <div className="pt-6 border-t border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-lg font-bold text-gray-500">
-                  {listing.seller.name?.[0] || 'S'}
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-gray-900 flex items-center gap-1">
-                    {listing.seller.name || 'Anonymous Seller'}
-                    {listing.seller.isVerified && (
-                      <ShieldCheck className="w-4 h-4 text-blue-500" />
-                    )}
-                  </p>
-                  <p className="text-xs text-gray-500">Seller since {new Date(listing.seller.createdAt).getFullYear()}</p>
+              <div className="pt-6 border-t border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-lg font-bold text-gray-500">
+                    {listing.seller.name?.[0] || 'S'}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900 flex items-center gap-1">
+                      {listing.seller.name || 'Anonymous Seller'}
+                      {listing.seller.isVerified && (
+                        <ShieldCheck className="w-4 h-4 text-blue-500" />
+                      )}
+                    </p>
+                    <p className="text-xs text-gray-500">Seller since {new Date(listing.seller.createdAt).getFullYear()}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
-          <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
-            <h4 className="font-bold text-blue-900 text-sm mb-2 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4" /> RevenueVault Safe Guard
-            </h4>
-            <p className="text-xs text-blue-800 leading-normal">
-              We verify all financial claims. Never share personal information or payment details before seller approval.
-            </p>
-          </div>
+          {isSeller && (
+            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
+              <h4 className="font-bold text-blue-900 text-sm mb-2 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4" /> You own this listing
+              </h4>
+              <p className="text-xs text-blue-800 leading-normal">
+                As the seller, you can see all details. Buyers will need to request access before they can see sensitive information and start a chat with you.
+              </p>
+              <div className="mt-4">
+                <Link
+                  href="/dashboard/seller"
+                  className="text-xs font-bold text-blue-600 hover:underline"
+                >
+                  Manage listings in Dashboard →
+                </Link>
+              </div>
+            </div>
+          )}
 
-          {session && (
+          {!isSeller && (
+            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
+              <h4 className="font-bold text-blue-900 text-sm mb-2 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4" /> RevenueVault Safe Guard
+              </h4>
+              <p className="text-xs text-blue-800 leading-normal">
+                We verify all financial claims. Never share personal information or payment details before seller approval.
+              </p>
+            </div>
+          )}
+
+          {session && !isSeller && (
             <ReportListingButton listingId={listing.id} />
           )}
         </div>
