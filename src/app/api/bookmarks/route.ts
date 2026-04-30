@@ -8,14 +8,14 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
     const { listingId } = body;
 
     if (!listingId) {
-      return new NextResponse("Listing ID required", { status: 400 });
+      return NextResponse.json({ message: "Listing ID required" }, { status: 400 });
     }
 
     // Toggle bookmark
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     }
   } catch (error) {
     console.error("[BOOKMARKS_POST]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }
 
@@ -53,7 +53,7 @@ export async function GET(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const bookmarks = await prisma.bookmark.findMany({
@@ -72,6 +72,6 @@ export async function GET(req: Request) {
     return NextResponse.json(bookmarks);
   } catch (error) {
     console.error("[BOOKMARKS_GET]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }

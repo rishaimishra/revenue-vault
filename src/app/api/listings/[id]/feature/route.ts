@@ -12,7 +12,7 @@ export async function POST(
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     // Verify listing exists and user is the owner
@@ -21,11 +21,11 @@ export async function POST(
     });
 
     if (!listing) {
-      return new NextResponse("Listing not found", { status: 404 });
+      return NextResponse.json({ message: "Listing not found" }, { status: 404 });
     }
 
     if (listing.sellerId !== (session.user as any).id) {
-      return new NextResponse("Forbidden", { status: 403 });
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
     // Simulate Payment logic here (in real app, call Stripe/Razorpay)
@@ -52,6 +52,6 @@ export async function POST(
     return NextResponse.json(updatedListing);
   } catch (error) {
     console.error("[FEATURE_LISTING_POST]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }

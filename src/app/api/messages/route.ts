@@ -8,14 +8,14 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
     const { content, dealId, receiverId } = body;
 
     if (!content || !dealId || !receiverId) {
-      return new NextResponse("Missing fields", { status: 400 });
+      return NextResponse.json({ message: "Missing fields" }, { status: 400 });
     }
 
     // Verify deal exists and user is part of it
@@ -29,14 +29,14 @@ export async function POST(req: Request) {
     });
 
     if (!deal) {
-      return new NextResponse("Deal not found", { status: 404 });
+      return NextResponse.json({ message: "Deal not found" }, { status: 404 });
     }
 
     const isSeller = deal.listing.sellerId === (session.user as any).id;
     const isBuyer = deal.buyerId === (session.user as any).id;
 
     if (!isSeller && !isBuyer) {
-      return new NextResponse("Forbidden", { status: 403 });
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
     const message = await prisma.message.create({
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     return NextResponse.json(message);
   } catch (error) {
     console.error("[MESSAGES_POST]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }
 
@@ -66,14 +66,14 @@ export async function GET(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(req.url);
     const dealId = searchParams.get("dealId");
 
     if (!dealId) {
-      return new NextResponse("Deal ID required", { status: 400 });
+      return NextResponse.json({ message: "Deal ID required" }, { status: 400 });
     }
 
     // Verify deal exists and user is part of it
@@ -87,11 +87,11 @@ export async function GET(req: Request) {
     });
 
     if (!deal) {
-      return new NextResponse("Deal not found", { status: 404 });
+      return NextResponse.json({ message: "Deal not found" }, { status: 404 });
     }
 
     if (deal.listing.sellerId !== (session.user as any).id && deal.buyerId !== (session.user as any).id) {
-      return new NextResponse("Forbidden", { status: 403 });
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
     const messages = await prisma.message.findMany({
@@ -107,6 +107,6 @@ export async function GET(req: Request) {
     return NextResponse.json(messages);
   } catch (error) {
     console.error("[MESSAGES_GET]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }

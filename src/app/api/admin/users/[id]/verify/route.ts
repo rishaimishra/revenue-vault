@@ -12,7 +12,7 @@ export async function PATCH(
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user || (session.user as any).role !== "ADMIN") {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -26,6 +26,6 @@ export async function PATCH(
     return NextResponse.json(updatedUser);
   } catch (error) {
     console.error("[ADMIN_USER_VERIFY_PATCH]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }

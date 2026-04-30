@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { listingSchema, ListingInput } from "@/lib/validations";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 
 export default function NewListingPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,7 +30,23 @@ export default function NewListingPage() {
     },
   });
 
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/signin?callbackUrl=/listings/new");
+    } else if (status === "authenticated") {
+      const user = session?.user as any;
+      if (user.role !== "SELLER" && user.role !== "ADMIN") {
+        setError("Only sellers can create listings. Please update your role in your profile.");
+      }
+    }
+  }, [status, session, router]);
+
   const onSubmit = async (data: any) => {
+    if ((session?.user as any).role !== "SELLER" && (session?.user as any).role !== "ADMIN") {
+      setError("Only sellers can create listings.");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -41,9 +59,10 @@ export default function NewListingPage() {
         body: JSON.stringify(data),
       });
 
+      const result = await response.json().catch(() => ({ message: "Failed to parse response" }));
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create listing");
+        throw new Error(result.message || "Failed to create listing");
       }
 
       router.push("/marketplace");
@@ -54,6 +73,46 @@ export default function NewListingPage() {
       setIsLoading(false);
     }
   };
+
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  const isNotSeller = status === "authenticated" &&
+    (session?.user as any).role !== "SELLER" &&
+    (session?.user as any).role !== "ADMIN";
+
+  if (isNotSeller) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+        <div className="bg-orange-50 border border-orange-200 p-8 rounded-2xl inline-block">
+          <AlertCircle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Sellers Only</h1>
+          <p className="text-gray-600 mb-6">
+            You are currently registered as a Buyer. To list your startup, please switch your role to Seller in your profile.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => router.push("/profile")}
+              className="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Go to Profile
+            </button>
+            <button
+              onClick={() => router.push("/marketplace")}
+              className="bg-gray-100 text-gray-700 font-bold py-2 px-6 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Back to Marketplace
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const categories = ["SaaS", "E-commerce", "Marketplace", "Agency", "Mobile App", "Content Site", "Other"];
 

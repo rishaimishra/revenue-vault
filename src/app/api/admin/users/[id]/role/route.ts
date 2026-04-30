@@ -12,14 +12,14 @@ export async function PATCH(
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user || (session.user as any).role !== "ADMIN") {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
     const { role } = body;
 
     if (!["BUYER", "SELLER", "ADMIN"].includes(role)) {
-      return new NextResponse("Invalid role", { status: 400 });
+      return NextResponse.json({ message: "Invalid role" }, { status: 400 });
     }
 
     const updatedUser = await prisma.user.update({
@@ -30,6 +30,6 @@ export async function PATCH(
     return NextResponse.json(updatedUser);
   } catch (error) {
     console.error("[ADMIN_USER_ROLE_PATCH]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }

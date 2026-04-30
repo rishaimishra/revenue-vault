@@ -8,14 +8,14 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
     const { listingId, reason } = body;
 
     if (!listingId || !reason) {
-      return new NextResponse("Missing fields", { status: 400 });
+      return NextResponse.json({ message: "Missing fields" }, { status: 400 });
     }
 
     const report = await prisma.report.create({
@@ -29,6 +29,6 @@ export async function POST(req: Request) {
     return NextResponse.json(report);
   } catch (error) {
     console.error("[REPORTS_POST]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }

@@ -12,14 +12,14 @@ export async function PATCH(
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
     const { status } = body;
 
     if (!["APPROVED", "REJECTED"].includes(status)) {
-      return new NextResponse("Invalid status", { status: 400 });
+      return NextResponse.json({ message: "Invalid status" }, { status: 400 });
     }
 
     // Check if request exists and if the current user is the seller of the listing
@@ -36,11 +36,11 @@ export async function PATCH(
     });
 
     if (!accessRequest) {
-      return new NextResponse("Request not found", { status: 404 });
+      return NextResponse.json({ message: "Request not found" }, { status: 404 });
     }
 
     if (accessRequest.listing.sellerId !== (session.user as any).id) {
-      return new NextResponse("Forbidden", { status: 403 });
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
     // Update status
@@ -72,6 +72,6 @@ export async function PATCH(
     return NextResponse.json(updatedRequest);
   } catch (error) {
     console.error("[ACCESS_REQUEST_PATCH]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }

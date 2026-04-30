@@ -12,7 +12,7 @@ export async function POST(
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     // Check if listing exists
@@ -21,12 +21,12 @@ export async function POST(
     });
 
     if (!listing) {
-      return new NextResponse("Listing not found", { status: 404 });
+      return NextResponse.json({ message: "Listing not found" }, { status: 404 });
     }
 
     // Don't allow seller to request access to their own listing
     if (listing.sellerId === (session.user as any).id) {
-      return new NextResponse("You cannot request access to your own listing", { status: 400 });
+      return NextResponse.json({ message: "You cannot request access to your own listing" }, { status: 400 });
     }
 
     // Create access request
@@ -48,6 +48,6 @@ export async function POST(
     return NextResponse.json(accessRequest);
   } catch (error) {
     console.error("[ACCESS_REQUEST_POST]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }

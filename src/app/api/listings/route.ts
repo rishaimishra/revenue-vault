@@ -9,12 +9,12 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     // @ts-ignore
     if ((session.user as any).role !== "SELLER" && (session.user as any).role !== "ADMIN") {
-      return new NextResponse("Only sellers can create listings", { status: 403 });
+      return NextResponse.json({ message: "Only sellers can create listings" }, { status: 403 });
     }
 
     const body = await req.json();
@@ -31,10 +31,10 @@ export async function POST(req: Request) {
     return NextResponse.json(listing);
   } catch (error: any) {
     if (error.name === "ZodError") {
-      return new NextResponse(JSON.stringify(error.errors), { status: 400 });
+      return NextResponse.json({ message: "Validation error", errors: error.errors }, { status: 400 });
     }
     console.error("[LISTINGS_POST]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }
 
@@ -88,6 +88,6 @@ export async function GET(req: Request) {
     return NextResponse.json(listings);
   } catch (error) {
     console.error("[LISTINGS_GET]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }

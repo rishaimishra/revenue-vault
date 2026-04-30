@@ -12,7 +12,7 @@ export async function PATCH(
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -29,11 +29,11 @@ export async function PATCH(
     });
 
     if (!deal) {
-      return new NextResponse("Deal not found", { status: 404 });
+      return NextResponse.json({ message: "Deal not found" }, { status: 404 });
     }
 
     if (deal.listing.sellerId !== (session.user as any).id) {
-      return new NextResponse("Forbidden", { status: 403 });
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
     const updatedDeal = await prisma.deal.update({
@@ -52,6 +52,6 @@ export async function PATCH(
     return NextResponse.json(updatedDeal);
   } catch (error) {
     console.error("[DEAL_PATCH]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ message: "Internal Error" }, { status: 500 });
   }
 }
