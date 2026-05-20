@@ -6,7 +6,7 @@ export default function Home() {
     <div className="bg-white">
       {/* Hero Section */}
       <section className="px-6 py-20 md:py-32 max-w-7xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-widest mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold uppercase tracking-wider mb-8">
             <Zap className="w-3 h-3 fill-blue-700" /> The Modern Startup Marketplace
           </div>
           <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 tracking-tight">

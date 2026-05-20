@@ -52,10 +52,10 @@ export const ListingCard = ({ listing, isBookmarked: initialIsBookmarked }: List
   };
 
   return (
-    <div className={`rounded-lg border shadow-sm hover:shadow-md transition-all p-6 flex flex-col gap-4 relative group ${
+    <div className={`rounded-2xl border shadow-sm hover:shadow-xl transition-all duration-300 p-7 flex flex-col gap-5 relative group ${
       listing.isFeatured
-        ? "border-blue-500 bg-blue-50/30 ring-2 ring-blue-500/10"
-        : "bg-white border-gray-200"
+        ? "border-blue-200 bg-white ring-2 ring-blue-500/10"
+        : "bg-white border-gray-100 hover:border-gray-200"
     }`}>
       {listing.isFeatured && (
         <div className="absolute -top-3 left-6 bg-blue-600 text-white text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-widest flex items-center gap-1 shadow-lg z-20">

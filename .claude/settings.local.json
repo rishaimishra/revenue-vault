@@ -37,7 +37,8 @@
       "PowerShell(Remove-Item *)",
       "PowerShell(taskkill *)",
       "Bash(npx ts-node *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(curl -s http://localhost:3001)"
     ]
   }
 }
