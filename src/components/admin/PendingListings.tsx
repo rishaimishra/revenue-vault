@@ -40,6 +40,13 @@ export const PendingListings = ({ listings }: { listings: any[] }) => {
                   <div className="text-[10px] uppercase font-bold text-gray-400">
                     Profit: <span className="text-gray-900">${listing.profit.toLocaleString()}</span>
                   </div>
+                  <a
+                    href={`/listings/${listing.id}`}
+                    target="_blank"
+                    className="text-[10px] uppercase font-bold text-blue-600 hover:underline"
+                  >
+                    View Details
+                  </a>
                 </div>
                 <AdminListingActions listingId={listing.id} />
               </div>
