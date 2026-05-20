@@ -32,7 +32,10 @@
       "Bash(mv \"src/app/messages/[id/]\" \"src/app/messages/temp_id\")",
       "Bash(rm -rf \"src/app/messages/[id]\")",
       "Bash(mv \"src/app/messages/temp_id\" \"src/app/messages/[id]\")",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(rd /s /q \"E:\\\\Revenue-Vault\\\\node_modules\\\\.prisma\\\\client\")",
+      "PowerShell(Remove-Item *)",
+      "PowerShell(taskkill *)"
     ]
   }
 }

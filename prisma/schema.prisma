@@ -119,6 +119,22 @@ model StartupListing {
 
   title       String
   description String        @db.Text
+
+  // Basic Info
+  tagline     String?
+  country     String?
+  foundedYear Int?
+
+  // Business Details
+  businessModel String?
+  usp           String? @db.Text
+  reasonForSelling String? @db.Text
+
+  // Assets & Traction
+  website      String?
+  customerCount Int?
+  traffic       String?
+  assetsIncluded String? @db.Text
   revenue     Float
   profit      Float
   price       Float

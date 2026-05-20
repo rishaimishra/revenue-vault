@@ -1,22 +1,28 @@
-# Plan: Add Rejection Reason to Admin Listing Rejection
+# Plan: Multi-Step Listing Creation Flow
 
 ## Context
-The admin currently rejects listings with a simple "Reject" button in `AdminListingActions`, but the user needs to provide a reason for the rejection, which should be stored.
+The current listing creation flow is a single large form. The user requested a 5-step wizard for better UX:
+1. Basic Info
+2. Business Details
+3. Financials
+4. Assets & Traction
+5. Seller Verification
 
-## Recommended Approach
-1. **Database Schema**: Add a `rejectionReason` field (optional string) to `StartupListing` model in `prisma/schema.prisma`.
-2. **UI Component (`AdminListingActions`)**: Update the `AdminListingActions` component to include a prompt (e.g., using `window.prompt`) or a small modal to capture the reason when "Reject" is clicked.
-3. **API Endpoint (`src/app/api/admin/listings/[id]/route.ts`)**: Update the `PATCH` handler to accept `rejectionReason` and store it in the database.
+## Approach
+1. **Schema Update**: Update `prisma/schema.prisma` to include the new fields required for the multi-step form (tagline, country, founded year, business model, USP, reason for selling, website, customer count, traffic, etc.).
+2. **Validation**: Update `src/lib/validations.ts` to include the new fields with appropriate Zod schemas for multi-step validation.
+3. **Form Component**: Refactor `src/app/listings/new/page.tsx` into a multi-step form wizard using state management (e.g., `useState` for current step).
+4. **Backend Update**: Update the API handler for `POST /api/listings` to accept the expanded dataset.
+5. **Database Migration**: Run `npx prisma db push` to synchronize changes.
 
 ## Steps
-1. Add `rejectionReason String?` to `StartupListing` in `prisma/schema.prisma` and run `npx prisma db push`.
-2. Update `src/app/api/admin/listings/[id]/route.ts` to update the new field when `status === 'REJECTED'`.
-3. Update `src/components/admin/AdminListingActions.tsx`:
-   - Replace the simple alert with a `window.prompt` or a simple state-based input to capture the reason.
-   - Send the reason in the `PATCH` body.
+1. Add necessary fields to `StartupListing` model in `prisma/schema.prisma`.
+2. Expand `listingSchema` in `src/lib/validations.ts` to match the new form structure.
+3. Redesign `src/app/listings/new/page.tsx` to include `step` state and conditional rendering for each section.
+4. Update `onSubmit` handler to send the collected form data to `POST /api/listings`.
 
 ## Verification
-1. Navigate to `/admin/listings`.
-2. Click "Reject" on a listing.
-3. Enter a reason in the prompt/input.
-4. Confirm the listing status is updated to REJECTED and the reason is saved in the database.
+1. Navigate to `/listings/new`.
+2. Progress through all 5 steps of the form.
+3. Ensure validation triggers correctly for each step.
+4. Verify that submitting the final step correctly saves all data to the database.
