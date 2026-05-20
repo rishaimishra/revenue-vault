@@ -1,30 +1,32 @@
-# Plan: Admin Panel Sidebar Implementation
+# Plan: Admin Dashboard Refactoring
 
 ## Context
-To improve navigability and usability of the admin panel, I will implement a vertical sidebar that provides quick access to all key admin sections (Dashboard, User Management, Listings, Reports, Payments, Support).
+The admin dashboard (`/admin`) currently aggregates all data (listings, users, reports, payments) on a single page. The user wants to break this out into separate pages for better organization, as requested by the addition of the new sidebar.
 
 ## Recommended Approach
-1. Create a reusable `AdminSidebar` component.
-2. Create `src/app/admin/layout.tsx` to wrap all `/admin/**` routes.
-3. Integrate the `AdminSidebar` into the layout.
-
-## Proposed Component Structure
-- `src/components/admin/AdminSidebar.tsx`: The sidebar component containing navigation links.
-- `src/app/admin/layout.tsx`: The layout file that hosts the sidebar and the main content area.
+1.  **Extract Data Modules**: Create a shared service file (or reuse current ones if appropriate) for fetching distinct data types (listings, users, reports, payments).
+2.  **Create Reusable UI Components**: Move the `table` and `list` components from `admin/page.tsx` into individual components in `src/components/admin/` (e.g., `PendingListingsTable.tsx`, `UserTable.tsx`, `ReportList.tsx`, `PaymentsTable.tsx`).
+3.  **Update Pages**:
+    -   `/admin/page.tsx`: Keep only the "Stats Overview" and maybe a small summary view.
+    -   `/admin/listings/page.tsx`: Display the full list of all listings (or specifically pending ones).
+    -   `/admin/users/page.tsx`: Display the full list of users.
+    -   `/admin/reports/page.tsx`: Display the full list of reports.
+    -   `/admin/payments/page.tsx`: Display the full list of payments.
 
 ## Steps
-1. Create `src/components/admin/AdminSidebar.tsx` with navigation links for:
-   - Dashboard (`/admin`)
-   - Listings (`/admin/listings`)
-   - Users (`/admin/users`)
-   - Reports (`/admin/reports`)
-   - Payments (`/admin/payments`)
-   - Support (`/admin/support`)
-2. Create `src/app/admin/layout.tsx` using `flex` to arrange the sidebar and main content.
-3. Ensure the active state is highlighted based on the pathname.
+1.  Analyze `admin/page.tsx` to identify the sections.
+2.  Create/Update components in `src/components/admin/`:
+    - `PendingListings.tsx`
+    - `UserVerificationTable.tsx`
+    - `ReportsTable.tsx`
+    - `PaymentsTable.tsx`
+3.  Implement each route:
+    - `src/app/admin/listings/page.tsx`
+    - `src/app/admin/users/page.tsx`
+    - `src/app/admin/reports/page.tsx`
+    - `src/app/admin/payments/page.tsx`
+4.  Update `src/app/admin/page.tsx` to display summary only.
 
 ## Verification
-1. Navigate to `/admin` and confirm the sidebar is visible on the left.
-2. Verify that clicking on sidebar links navigates correctly to the respective pages.
-3. Verify that the current page link is highlighted in the sidebar.
-4. Ensure responsive behavior (e.g., hiding or collapsing on smaller screens).
+1.  Verify the dashboard home (`/admin`) shows the stats only.
+2.  Verify each sidebar link leads to the correct page populated with the appropriate list/table data.
