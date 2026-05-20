@@ -16,7 +16,7 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { status } = body; // PUBLISHED or REJECTED
+    const { status, rejectionReason } = body; // PUBLISHED or REJECTED
 
     if (!["PUBLISHED", "REJECTED"].includes(status)) {
       return NextResponse.json({ message: "Invalid status" }, { status: 400 });
@@ -24,7 +24,7 @@ export async function PATCH(
 
     const updatedListing = await prisma.startupListing.update({
       where: { id: listingId },
-      data: { status },
+      data: { status, rejectionReason: status === "REJECTED" ? rejectionReason : null },
     });
 
     return NextResponse.json(updatedListing);

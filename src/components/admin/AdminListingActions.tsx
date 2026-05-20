@@ -13,12 +13,18 @@ export const AdminListingActions = ({ listingId }: AdminListingActionsProps) => 
   const router = useRouter();
 
   const handleAction = async (status: "PUBLISHED" | "REJECTED") => {
+    let rejectionReason = null;
+    if (status === "REJECTED") {
+      rejectionReason = window.prompt("Enter rejection reason:");
+      if (rejectionReason === null) return;
+    }
+
     setIsLoading(status);
     try {
       const response = await fetch(`/api/admin/listings/${listingId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, rejectionReason }),
       });
 
       if (!response.ok) throw new Error("Failed to update listing");

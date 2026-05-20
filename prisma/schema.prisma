@@ -125,6 +125,7 @@ model StartupListing {
   category    String
 
   status      ListingStatus @default(PENDING_APPROVAL)
+  rejectionReason String?
   isFeatured  Boolean       @default(false)
 
   bookmarks   Bookmark[]

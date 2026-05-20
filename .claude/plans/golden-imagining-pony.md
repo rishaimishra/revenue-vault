@@ -1,19 +1,22 @@
-# Plan: Add Filters and Pagination to Admin Listings Page
+# Plan: Add Rejection Reason to Admin Listing Rejection
 
 ## Context
-The admin listings management page (`/admin/listings`) currently loads all pending listings without any filtering or pagination, which will not scale.
+The admin currently rejects listings with a simple "Reject" button in `AdminListingActions`, but the user needs to provide a reason for the rejection, which should be stored.
 
-## Approach
-1. **Filters**: Add filters for listing status (PENDING, PUBLISHED, REJECTED) and a search input for title/description.
-2. **Pagination**: Implement basic server-side pagination using `skip` and `take` with Prisma.
-3. **UI/UX**: Reuse the filter/sort pattern implemented for the User Management page.
+## Recommended Approach
+1. **Database Schema**: Add a `rejectionReason` field (optional string) to `StartupListing` model in `prisma/schema.prisma`.
+2. **UI Component (`AdminListingActions`)**: Update the `AdminListingActions` component to include a prompt (e.g., using `window.prompt`) or a small modal to capture the reason when "Reject" is clicked.
+3. **API Endpoint (`src/app/api/admin/listings/[id]/route.ts`)**: Update the `PATCH` handler to accept `rejectionReason` and store it in the database.
 
 ## Steps
-1. **Backend Update**: Modify `src/app/admin/listings/page.tsx` to handle `q` (search), `status` (filter), `page`, and `limit` query parameters.
-2. **Database Query**: Update the Prisma query to dynamically include filtering (`where`) and pagination (`skip`, `take`).
-3. **Frontend UI**: Create a `ListingFilters` component (or reuse logic if applicable) and add pagination controls at the bottom of the list.
+1. Add `rejectionReason String?` to `StartupListing` in `prisma/schema.prisma` and run `npx prisma db push`.
+2. Update `src/app/api/admin/listings/[id]/route.ts` to update the new field when `status === 'REJECTED'`.
+3. Update `src/components/admin/AdminListingActions.tsx`:
+   - Replace the simple alert with a `window.prompt` or a simple state-based input to capture the reason.
+   - Send the reason in the `PATCH` body.
 
 ## Verification
 1. Navigate to `/admin/listings`.
-2. Apply status and search filters, and ensure results update.
-3. Verify pagination controls (Next/Previous page) work and correctly fetch different sets of listings.
+2. Click "Reject" on a listing.
+3. Enter a reason in the prompt/input.
+4. Confirm the listing status is updated to REJECTED and the reason is saved in the database.
