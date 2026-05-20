@@ -1,32 +1,25 @@
-# Plan: Admin Dashboard Refactoring
+# Plan: Add Sorting and Filtering to Admin User Management
 
 ## Context
-The admin dashboard (`/admin`) currently aggregates all data (listings, users, reports, payments) on a single page. The user wants to break this out into separate pages for better organization, as requested by the addition of the new sidebar.
+The user requested sorting and filtering functionality for the admin user listing page (`/admin/users`). Currently, this page loads a static list of users.
 
-## Recommended Approach
-1.  **Extract Data Modules**: Create a shared service file (or reuse current ones if appropriate) for fetching distinct data types (listings, users, reports, payments).
-2.  **Create Reusable UI Components**: Move the `table` and `list` components from `admin/page.tsx` into individual components in `src/components/admin/` (e.g., `PendingListingsTable.tsx`, `UserTable.tsx`, `ReportList.tsx`, `PaymentsTable.tsx`).
-3.  **Update Pages**:
-    -   `/admin/page.tsx`: Keep only the "Stats Overview" and maybe a small summary view.
-    -   `/admin/listings/page.tsx`: Display the full list of all listings (or specifically pending ones).
-    -   `/admin/users/page.tsx`: Display the full list of users.
-    -   `/admin/reports/page.tsx`: Display the full list of reports.
-    -   `/admin/payments/page.tsx`: Display the full list of payments.
+## Approach
+1. **Frontend UI**: Add a search input (for filtering by name/email) and dropdowns (for filtering by role/verification status and sorting by date) to `src/app/admin/users/page.tsx`.
+2. **Backend/API Interaction**: Update `src/app/admin/users/page.tsx` to handle these query parameters and perform a filtered/sorted `prisma.user.findMany` query.
+3. **Component Update**: Keep the existing `UserTable` as it is simple and reusable.
 
 ## Steps
-1.  Analyze `admin/page.tsx` to identify the sections.
-2.  Create/Update components in `src/components/admin/`:
-    - `PendingListings.tsx`
-    - `UserVerificationTable.tsx`
-    - `ReportsTable.tsx`
-    - `PaymentsTable.tsx`
-3.  Implement each route:
-    - `src/app/admin/listings/page.tsx`
-    - `src/app/admin/users/page.tsx`
-    - `src/app/admin/reports/page.tsx`
-    - `src/app/admin/payments/page.tsx`
-4.  Update `src/app/admin/page.tsx` to display summary only.
+1. Update `src/app/admin/users/page.tsx`:
+   - Change component to `"use client"` or maintain as server component but use URLSearchParams to handle filter/sort state.
+   - Use `next/navigation` to read search parameters.
+   - Update `prisma.user.findMany` query with dynamic `where` and `orderBy` clauses based on searchParams.
+   - Add filter/sort UI components at the top of the page.
+2. Implement logic:
+   - Search: Filter by name or email.
+   - Role filter: Filter by user role.
+   - Sorting: Sort by createdAt (asc/desc).
 
 ## Verification
-1.  Verify the dashboard home (`/admin`) shows the stats only.
-2.  Verify each sidebar link leads to the correct page populated with the appropriate list/table data.
+1. Navigate to `/admin/users`.
+2. Apply filters and sorting.
+3. Verify the URL updates with query parameters and the list refreshes with correctly filtered/sorted data.
