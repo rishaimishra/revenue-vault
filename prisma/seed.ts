@@ -27,32 +27,33 @@ async function main() {
   })
 
   // Create dummy listings
-  await prisma.startupListing.createMany({
-    data: [
-      {
-        sellerId: seller.id,
-        title: 'AI Analytics SaaS',
-        description: 'A cutting-edge AI platform for analytics.',
-        revenue: 100000,
-        profit: 30000,
-        price: 250000,
-        category: 'SaaS',
-        status: 'PUBLISHED',
-        tagline: 'Analytics redefined.',
-      },
-      {
-        sellerId: seller.id,
-        title: 'Organic E-commerce Store',
-        description: 'A booming organic health store.',
-        revenue: 50000,
-        profit: 15000,
-        price: 100000,
-        category: 'E-commerce',
-        status: 'PENDING_APPROVAL',
-        tagline: 'Healthy living, simple.',
-      }
-    ],
-    skipDuplicates: true,
+  // Using create instead of createMany to avoid type issues with schema changes not being fully picked up by createMany types yet
+  await prisma.startupListing.create({
+    data: {
+      sellerId: seller.id,
+      title: 'AI Analytics SaaS',
+      description: 'A cutting-edge AI platform for analytics.',
+      revenue: 100000,
+      profit: 30000,
+      price: 250000,
+      category: 'SaaS',
+      status: 'PUBLISHED',
+      tagline: 'Analytics redefined.',
+    },
+  })
+
+  await prisma.startupListing.create({
+    data: {
+      sellerId: seller.id,
+      title: 'Organic E-commerce Store',
+      description: 'A booming organic health store.',
+      revenue: 50000,
+      profit: 15000,
+      price: 100000,
+      category: 'E-commerce',
+      status: 'PENDING_APPROVAL',
+      tagline: 'Healthy living, simple.',
+    },
   })
 
   console.log('Seeded successfully!')

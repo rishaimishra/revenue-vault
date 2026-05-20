@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { listingSchema, ListingInput } from "@/lib/validations";
-import { Loader2, ChevronRight, ChevronLeft } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 const steps = [
   { id: 1, name: "Basic Info" },
@@ -22,9 +22,27 @@ export default function NewListingPage() {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm<ListingInput>({
+  const { register, handleSubmit, formState: { errors } } = useForm<ListingInput>({
     resolver: zodResolver(listingSchema),
     mode: "onChange",
+    defaultValues: {
+      title: "",
+      category: "",
+      tagline: "",
+      country: "",
+      foundedYear: 2025,
+      description: "",
+      businessModel: "",
+      usp: "",
+      reasonForSelling: "",
+      revenue: 0,
+      profit: 0,
+      price: 0,
+      website: "",
+      customerCount: 0,
+      traffic: "",
+      assetsIncluded: "",
+    } as any,
   });
 
   const onSubmit = async (data: ListingInput) => {

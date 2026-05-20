@@ -5,19 +5,19 @@ export const listingSchema = z.object({
   tagline: z.string().optional(),
   category: z.string().min(1, "Category is required"),
   country: z.string().optional(),
-  foundedYear: z.coerce.number().optional(),
+  foundedYear: z.number().optional(),
 
   description: z.string().min(10, "Description must be at least 10 characters"),
   businessModel: z.string().optional(),
   usp: z.string().optional(),
   reasonForSelling: z.string().optional(),
 
-  revenue: z.coerce.number().min(0, "Revenue must be a positive number"),
-  profit: z.coerce.number().min(0, "Profit must be a positive number"),
-  price: z.coerce.number().min(0, "Price must be a positive number"),
+  revenue: z.number().min(0, "Revenue must be a positive number"),
+  profit: z.number().min(0, "Profit must be a positive number"),
+  price: z.number().min(0, "Price must be a positive number"),
 
   website: z.string().optional(),
-  customerCount: z.coerce.number().optional(),
+  customerCount: z.number().optional(),
   traffic: z.string().optional(),
   assetsIncluded: z.string().optional(),
 });
