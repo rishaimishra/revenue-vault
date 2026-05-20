@@ -81,7 +81,7 @@ export default async function AdminPage() {
   const { pendingListings, users, stats, reports, activeDeals, recentPayments } = await getAdminData();
 
   return (
-    <div className="container mx-auto px-4 py-10">
+    <div className="px-4 py-10">
       <div className="flex items-center gap-3 mb-8">
         <div className="p-3 bg-blue-600 rounded-xl">
           <ShieldCheck className="w-8 h-8 text-white" />
