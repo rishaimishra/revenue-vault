@@ -35,7 +35,9 @@
       "Bash(npm run *)",
       "Bash(rd /s /q \"E:\\\\Revenue-Vault\\\\node_modules\\\\.prisma\\\\client\")",
       "PowerShell(Remove-Item *)",
-      "PowerShell(taskkill *)"
+      "PowerShell(taskkill *)",
+      "Bash(npx ts-node *)",
+      "Bash(node *)"
     ]
   }
 }
