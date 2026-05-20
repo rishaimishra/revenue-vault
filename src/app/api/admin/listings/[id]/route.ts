@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { ListingStatus } from "@prisma/client"; // 1. Import the generated Prisma Enum
 
 export async function PATCH(
   req: Request,
@@ -16,15 +17,20 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { status, rejectionReason } = body; // PUBLISHED or REJECTED
+    const { status, rejectionReason } = body;
 
-    if (!["PUBLISHED", "REJECTED"].includes(status)) {
+    // 2. Safely validate against the explicit Enum values instead of loose strings
+    if (status !== ListingStatus.PUBLISHED && status !== ListingStatus.REJECTED) {
       return NextResponse.json({ message: "Invalid status" }, { status: 400 });
     }
 
+    // 3. Update the database using the strict Enum type
     const updatedListing = await prisma.startupListing.update({
       where: { id: listingId },
-      data: { status, rejectionReason: status === "REJECTED" ? rejectionReason : null },
+      data: { 
+        status: status as ListingStatus, 
+        rejectionReason: status === ListingStatus.REJECTED ? rejectionReason : null 
+      },
     });
 
     return NextResponse.json(updatedListing);
