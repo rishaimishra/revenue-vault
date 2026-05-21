@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { listingSchema } from "@/lib/validations";
+import { listingSchema, ListingInput } from "@/lib/validations";
 
 export async function POST(req: Request) {
   try {
@@ -12,26 +12,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // @ts-ignore
-    if ((session.user as any).role !== "SELLER" && (session.user as any).role !== "ADMIN") {
+    const user = session.user as { id: string; role: string };
+    if (user.role !== "SELLER" && user.role !== "ADMIN") {
       return NextResponse.json({ message: "Only sellers can create listings" }, { status: 403 });
     }
 
     const body = await req.json();
-    const validatedData = listingSchema.parse(body);
+    const validatedData: ListingInput = listingSchema.parse(body);
 
     const listing = await prisma.startupListing.create({
       data: {
         ...validatedData,
-        sellerId: (session.user as any).id,
-        status: "PENDING_APPROVAL", // MVP requirement: Listing approval before publishing
+        sellerId: user.id,
+        status: "PENDING_APPROVAL",
+        profit: validatedData.profit || 0,
       },
     });
 
     return NextResponse.json(listing);
-  } catch (error: any) {
-    if (error.name === "ZodError") {
-      return NextResponse.json({ message: "Validation error", errors: error.errors }, { status: 400 });
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "name" in error && error.name === "ZodError") {
+      return NextResponse.json({ message: "Validation error", errors: (error as { errors?: unknown }).errors }, { status: 400 });
     }
     console.error("[LISTINGS_POST]", error);
     return NextResponse.json({ message: "Internal Error" }, { status: 500 });
@@ -48,8 +49,8 @@ export async function GET(req: Request) {
     const minPrice = searchParams.get("minPrice");
     const maxPrice = searchParams.get("maxPrice");
 
-    const where: any = {
-      status: "PUBLISHED", // Only show approved listings in the marketplace
+    const where: Record<string, unknown> = {
+      status: "PUBLISHED",
     };
 
     if (q) {
@@ -65,8 +66,8 @@ export async function GET(req: Request) {
 
     if (minPrice || maxPrice) {
       where.price = {};
-      if (minPrice) where.price.gte = parseFloat(minPrice);
-      if (maxPrice) where.price.lte = parseFloat(maxPrice);
+      if (minPrice) (where.price as Record<string, number>).gte = parseFloat(minPrice);
+      if (maxPrice) (where.price as Record<string, number>).lte = parseFloat(maxPrice);
     }
 
     const listings = await prisma.startupListing.findMany({

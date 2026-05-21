@@ -10,7 +10,7 @@ export const Footer = () => {
           {/* Brand */}
           <div className="col-span-1 md:col-span-1 space-y-6">
             <Link href="/">
-              <Image src="/logo_reve.png" alt="RevenueVault" width={200} height={60} className="rounded-lg" />
+              <Image src="/logo_reve.png" alt="RevenueVault" width={200} height={60} className="rounded-lg" style={{ width: "auto", height: "auto" }} />
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed">
               The world's most secure and anonymous marketplace for buying and selling startups. Built for founders, by founders.

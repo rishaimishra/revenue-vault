@@ -22,7 +22,7 @@ export const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/">
-            <Image src="/logo_reve.png" alt="RevenueVault" width={200} height={60} className="rounded-lg" />
+            <Image src="/logo_reve.png" alt="RevenueVault" width={200} height={60} className="rounded-lg" style={{ width: "auto", height: "auto" }} />
           </Link>
 
           {/* Desktop Nav */}

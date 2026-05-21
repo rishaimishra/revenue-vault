@@ -2,10 +2,15 @@ import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { DollarSign, BarChart2, TrendingUp, Calendar, ShieldCheck, User } from "lucide-react";
+import { DollarSign, BarChart2, TrendingUp, ShieldCheck, Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { RequestAccessButton } from "@/components/RequestAccessButton";
 import { ReportListingButton } from "@/components/ReportListingButton";
+
+interface SessionUser {
+  id: string;
+  role: string;
+}
 
 async function getListing(id: string) {
   const listing = await prisma.startupListing.findUnique({
@@ -35,9 +40,9 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
   }
 
   // Check if current user is seller or admin
-  const isSeller = session?.user && (session.user as any).id === listing.sellerId;
-  // @ts-ignore
-  const isAdmin = session?.user && (session.user as any).role === "ADMIN";
+  const user = session?.user as SessionUser | undefined;
+  const isSeller = user?.id === listing.sellerId;
+  const isAdmin = user?.role === "ADMIN";
 
   // Protection: If not published, only seller or admin can see it
   if (listing.status !== "PUBLISHED" && !isSeller && !isAdmin) {
@@ -45,12 +50,12 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
   }
 
   // Check if buyer has already requested access
-  const accessRequest = session?.user
+  const accessRequest = user
     ? await prisma.accessRequest.findUnique({
         where: {
           listingId_buyerId: {
             listingId: listing.id,
-            buyerId: (session.user as any).id,
+            buyerId: user.id,
           },
         },
       })
@@ -172,24 +177,37 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
             </div>
           )}
 
-          {isSeller && (
-            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
-              <h4 className="font-bold text-blue-900 text-sm mb-2 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4" /> You own this listing
-              </h4>
-              <p className="text-xs text-blue-800 leading-normal">
-                As the seller, you can see all details. Buyers will need to request access before they can see sensitive information and start a chat with you.
-              </p>
-              <div className="mt-4">
-                <Link
-                  href="/dashboard/seller"
-                  className="text-xs font-bold text-blue-600 hover:underline"
-                >
-                  Manage listings in Dashboard →
-                </Link>
-              </div>
-            </div>
-          )}
+{isSeller && (
+             <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 space-y-4">
+               <h4 className="font-bold text-blue-900 text-sm mb-2 flex items-center gap-2">
+                 <ShieldCheck className="w-4 h-4" /> You own this listing
+               </h4>
+               <p className="text-xs text-blue-800 leading-normal">
+                 As the seller, you can see all details. Buyers will need to request access before they can see sensitive information and start a chat with you.
+               </p>
+               <div className="flex gap-2">
+                 <Link
+                   href={`/listings/${id}/edit`}
+                   className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white text-blue-600 text-xs font-medium rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors"
+                 >
+                   <Edit className="w-3 h-3" /> Edit
+                 </Link>
+                 <button
+                   type="button"
+                   className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white text-red-600 text-xs font-medium rounded-lg border border-red-200 hover:bg-red-50 transition-colors"
+                   onClick={() => {
+                     if (confirm("Are you sure you want to delete this listing? This action cannot be undone.")) {
+                       fetch(`/api/listings/${id}`, { method: "DELETE" })
+                         .then(() => window.location.href = "/dashboard/seller")
+                         .catch(() => alert("Failed to delete listing"));
+                     }
+                   }}
+                 >
+                   <Trash2 className="w-3 h-3" /> Delete
+                 </button>
+               </div>
+             </div>
+           )}
 
           {!isSeller && (
             <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
