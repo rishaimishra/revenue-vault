@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import { listingSchema, ListingInput } from "@/lib/validations";
 import { Loader2, ArrowLeft, ArrowRight, Building2, FileText, DollarSign, Users, ExternalLink, ShieldCheck } from "lucide-react";
 
@@ -103,10 +105,10 @@ export default function NewListingPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-const {
+  const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState,
     trigger,
   } = useForm<ListingInput>({
     resolver: zodResolver(listingSchema),
@@ -130,6 +132,8 @@ const {
       assetsIncluded: "",
     },
   });
+
+  const errors = formState.errors;
 
   const nextStep = async () => {
     const fieldsToValidate = getFieldsForStep(step);
@@ -162,9 +166,40 @@ const {
         body: JSON.stringify(data),
       });
       if (res.ok) {
+        await res.json(); // We don't need the result, just confirming the request succeeded
         router.push("/dashboard/seller?tab=listings");
       } else {
-        alert("Failed to create listing. Please try again.");
+        // Try to get error details from response
+        let errorMessage = "Failed to create listing. Please try again.";
+        try {
+          const errorData = await res.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+           } else if (errorData.errors) {
+             // Format validation errors - handle various possible error structures
+             let errorMessages: string[] = [];
+             
+             if (Array.isArray(errorData.errors)) {
+               // Handle array of errors
+               errorMessages = errorData.errors
+                 .filter((err: any): err is { message: string } => err && typeof err === 'object' && 'message' in err && typeof err.message === 'string')
+                 .map((err: { message: string }) => err.message);
+             } else if (errorData.errors && typeof errorData.errors === 'object') {
+               // Handle object of errors (like Zod error format)
+               errorMessages = Object.values(errorData.errors)
+                 .filter((err: any): err is { message: string } => err && typeof err === 'object' && 'message' in err && typeof err.message === 'string')
+                 .map((err: { message: string }) => err.message);
+             }
+             
+             if (errorMessages.length > 0) {
+               errorMessage = errorMessages.join(", ");
+             }
+           }
+        } catch (e) {
+          // If we can't parse error response, use generic message
+          console.error("Could not parse error response:", e);
+        }
+        alert(errorMessage);
       }
     } catch (error) {
       console.error(error);
