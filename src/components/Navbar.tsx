@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { Shield, User, LogOut, Menu, X, LayoutDashboard, Store, Search, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+import { User, LogOut, Menu, X, LayoutDashboard, Store, Search, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 
 export const Navbar = () => {
@@ -20,11 +21,8 @@ export const Navbar = () => {
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-extrabold text-gray-900 tracking-tight">RevenueVault</span>
+          <Link href="/">
+            <Image src="/logo_reve.png" alt="RevenueVault" width={200} height={60} className="rounded-lg" />
           </Link>
 
           {/* Desktop Nav */}

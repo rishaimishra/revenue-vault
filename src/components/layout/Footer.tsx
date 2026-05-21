@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Shield, Globe, Share2, MessageSquare, Mail } from "lucide-react";
+import Image from "next/image";
+import { Globe, Share2, MessageSquare, Mail } from "lucide-react";
 
 export const Footer = () => {
   return (
@@ -8,11 +9,8 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           {/* Brand */}
           <div className="col-span-1 md:col-span-1 space-y-6">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-extrabold text-gray-900 tracking-tight">RevenueVault</span>
+            <Link href="/">
+              <Image src="/logo_reve.png" alt="RevenueVault" width={200} height={60} className="rounded-lg" />
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed">
               The world's most secure and anonymous marketplace for buying and selling startups. Built for founders, by founders.
