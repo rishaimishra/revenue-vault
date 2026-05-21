@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +14,9 @@ const steps = [
   { id: 4, name: "Assets & Traction" },
 ];
 
-export default function EditListingPage({ params }: { params: { id: string } }) {
+export default function EditListingPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const id = resolvedParams.id;
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +35,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        const res = await fetch(`/api/listings/${params.id}`);
+        const res = await fetch(`/api/listings/${id}`);
         if (res.ok) {
           const data = await res.json();
           reset({
@@ -49,18 +51,18 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
       }
     };
     fetchListing();
-  }, [params.id, reset]);
+  }, [id, reset]);
 
   const onSubmit = async (data: ListingInput) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/listings/${params.id}`, {
+      const res = await fetch(`/api/listings/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (res.ok) {
-        router.push(`/listings/${params.id}`);
+        router.push(`/listings/${id}`);
       } else {
         alert("Failed to update listing");
       }

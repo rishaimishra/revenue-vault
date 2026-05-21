@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { PaymentsTable } from "@/components/admin/PaymentsTable";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminPaymentsPage() {
   const recentPayments = await prisma.payment.findMany({
     take: 50,

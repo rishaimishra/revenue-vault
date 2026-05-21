@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { ReportsTable } from "@/components/admin/ReportsTable";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminReportsPage() {
   const reports = await prisma.report.findMany({
     where: { status: "PENDING" },
