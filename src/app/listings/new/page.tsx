@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { useSession } from "next-auth/react";
 import { listingSchema, ListingInput } from "@/lib/validations";
 import { Loader2, ArrowLeft, ArrowRight, Building2, FileText, DollarSign, Users, ExternalLink, ShieldCheck } from "lucide-react";
 
@@ -27,9 +26,9 @@ function FormStepIndicator({ step, currentStep }: FormStepProps) {
   const isCompleted = currentStep > step.id;
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="relative flex flex-col items-center w-10">
       <div
-        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all z-10 ${
           isActive
             ? "bg-blue-600 text-white ring-4 ring-blue-100"
             : isCompleted
@@ -40,8 +39,8 @@ function FormStepIndicator({ step, currentStep }: FormStepProps) {
         <step.icon className="w-5 h-5" />
       </div>
       <span
-        className={`mt-2 text-xs font-medium ${
-          isActive ? "text-blue-600" : isCompleted ? "text-green-600" : "text-gray-500"
+        className={`absolute top-12 left-1/2 -translate-x-1/2 text-xs font-medium text-center w-24 leading-tight transition-colors ${
+          isActive ? "text-blue-600 font-semibold" : isCompleted ? "text-green-600" : "text-gray-500"
         }`}
       >
         {step.name}
@@ -101,15 +100,29 @@ function TextArea({ className = "", error, ...props }: TextAreaProps) {
 }
 
 export default function NewListingPage() {
+  const { data: session, status } = useSession();
   const [step, setStep] = useState(1);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/signin?callbackUrl=/listings/new");
+    } else if (status === "authenticated" && session?.user) {
+      // @ts-ignore
+      const role = session.user.role;
+      if (role !== "SELLER" && role !== "ADMIN") {
+        router.push("/onboarding");
+      }
+    }
+  }, [status, session, router]);
 
   const {
     register,
     handleSubmit,
     formState,
     trigger,
+    getValues,
   } = useForm<ListingInput>({
     resolver: zodResolver(listingSchema),
     mode: "onChange",
@@ -147,11 +160,13 @@ export default function NewListingPage() {
   const getFieldsForStep = (currentStep: number): (keyof ListingInput)[] => {
     switch (currentStep) {
       case 1:
-        return ["title", "category"];
+        return ["title", "category", "tagline", "country", "foundedYear"];
       case 2:
-        return ["description"];
+        return ["description", "businessModel", "usp", "reasonForSelling"];
       case 3:
-        return ["revenue", "price"];
+        return ["revenue", "profit", "price"];
+      case 4:
+        return ["website", "customerCount", "traffic", "assetsIncluded"];
       default:
         return [];
     }
@@ -166,37 +181,32 @@ export default function NewListingPage() {
         body: JSON.stringify(data),
       });
       if (res.ok) {
-        await res.json(); // We don't need the result, just confirming the request succeeded
+        await res.json();
         router.push("/dashboard/seller?tab=listings");
       } else {
-        // Try to get error details from response
         let errorMessage = "Failed to create listing. Please try again.";
         try {
           const errorData = await res.json();
           if (errorData.message) {
             errorMessage = errorData.message;
-           } else if (errorData.errors) {
-             // Format validation errors - handle various possible error structures
-             let errorMessages: string[] = [];
-             
-             if (Array.isArray(errorData.errors)) {
-               // Handle array of errors
-               errorMessages = errorData.errors
-                 .filter((err: any): err is { message: string } => err && typeof err === 'object' && 'message' in err && typeof err.message === 'string')
-                 .map((err: { message: string }) => err.message);
-             } else if (errorData.errors && typeof errorData.errors === 'object') {
-               // Handle object of errors (like Zod error format)
-               errorMessages = Object.values(errorData.errors)
-                 .filter((err: any): err is { message: string } => err && typeof err === 'object' && 'message' in err && typeof err.message === 'string')
-                 .map((err: { message: string }) => err.message);
-             }
-             
-             if (errorMessages.length > 0) {
-               errorMessage = errorMessages.join(", ");
-             }
-           }
+          } else if (errorData.errors) {
+            let errorMessages: string[] = [];
+            
+            if (Array.isArray(errorData.errors)) {
+              errorMessages = errorData.errors
+                .filter((err: any): err is { message: string } => err && typeof err === 'object' && 'message' in err && typeof err.message === 'string')
+                .map((err: { message: string }) => err.message);
+            } else if (errorData.errors && typeof errorData.errors === 'object') {
+              errorMessages = Object.values(errorData.errors)
+                .filter((err: any): err is { message: string } => err && typeof err === 'object' && 'message' in err && typeof err.message === 'string')
+                .map((err: { message: string }) => err.message);
+            }
+            
+            if (errorMessages.length > 0) {
+              errorMessage = errorMessages.join(", ");
+            }
+          }
         } catch (e) {
-          // If we can't parse error response, use generic message
           console.error("Could not parse error response:", e);
         }
         alert(errorMessage);
@@ -208,6 +218,14 @@ export default function NewListingPage() {
       setIsLoading(false);
     }
   };
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
   const isLastStep = step === steps.length;
 
@@ -222,13 +240,13 @@ export default function NewListingPage() {
             </p>
           </div>
 
-          <div className="flex items-center justify-between mb-10 px-4">
+          <div className="flex items-center justify-between mb-16 px-4">
             {steps.map((s, index) => (
-              <div key={s.id} className="flex items-center">
+              <div key={s.id} className={`flex items-center ${index < steps.length - 1 ? "flex-1" : ""}`}>
                 <FormStepIndicator step={s} currentStep={step} />
                 {index < steps.length - 1 && (
                   <div
-                    className={`w-12 h-0.5 mx-2 transition-all ${
+                    className={`flex-1 h-0.5 mx-2 transition-all ${
                       step > s.id ? "bg-green-500" : "bg-gray-200"
                     }`}
                   />
@@ -442,21 +460,122 @@ export default function NewListingPage() {
             )}
 
             {step === 5 && (
-              <div className="text-center py-8 space-y-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                  <ShieldCheck className="w-8 h-8 text-green-600" />
+              <div className="space-y-6">
+                <div className="text-center py-4 space-y-3">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                    <ShieldCheck className="w-8 h-8 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      Review Your Listing
+                    </h3>
+                    <p className="text-gray-500 text-sm max-w-md mx-auto">
+                      Please double-check the key details of your startup before submitting for approval.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Ready to Submit?
-                  </h3>
-                  <p className="text-gray-600 max-w-md mx-auto">
-                    Your listing will be reviewed by our team. We verify all financial data
-                    and business details to ensure quality listings for buyers.
-                  </p>
+
+                <div className="bg-gray-50 rounded-2xl border border-gray-100 p-6 space-y-6 text-left">
+                  {/* Basic Info Summary */}
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Basic Information</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="block text-xs text-gray-400">Startup Name</span>
+                        <span className="font-semibold text-gray-900">{getValues("title")}</span>
+                      </div>
+                      <div>
+                        <span className="block text-xs text-gray-400">Category</span>
+                        <span className="font-semibold text-gray-900">{getValues("category")}</span>
+                      </div>
+                      {getValues("tagline") && (
+                        <div className="col-span-2">
+                          <span className="block text-xs text-gray-400">Tagline</span>
+                          <span className="text-sm text-gray-700 block max-h-16 overflow-y-auto">{getValues("tagline")}</span>
+                        </div>
+                      )}
+                      {getValues("country") && (
+                        <div>
+                          <span className="block text-xs text-gray-400">Country</span>
+                          <span className="text-sm text-gray-700">{getValues("country")}</span>
+                        </div>
+                      )}
+                      {getValues("foundedYear") && (
+                        <div>
+                          <span className="block text-xs text-gray-400">Founded Year</span>
+                          <span className="text-sm text-gray-700">{getValues("foundedYear")}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <hr className="border-gray-200/60" />
+
+                  {/* Financials Summary */}
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Financial Overview</h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <span className="block text-xs text-gray-400">Asking Price</span>
+                        <span className="font-bold text-lg text-blue-600">
+                          {getValues("price") !== undefined && getValues("price") !== null && !Number.isNaN(Number(getValues("price")))
+                            ? `$${Number(getValues("price")).toLocaleString()}`
+                            : "N/A"}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="block text-xs text-gray-400">Annual Revenue</span>
+                        <span className="font-semibold text-gray-800">
+                          {getValues("revenue") !== undefined && getValues("revenue") !== null && !Number.isNaN(Number(getValues("revenue")))
+                            ? `$${Number(getValues("revenue")).toLocaleString()}`
+                            : "N/A"}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="block text-xs text-gray-400">Annual Profit</span>
+                        <span className="font-semibold text-gray-800">
+                          {getValues("profit") !== undefined && getValues("profit") !== null && !Number.isNaN(Number(getValues("profit")))
+                            ? `$${Number(getValues("profit")).toLocaleString()}`
+                            : "N/A"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr className="border-gray-200/60" />
+
+                  {/* Assets & Website */}
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Assets & Details</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      {getValues("website") && (
+                        <div>
+                          <span className="block text-xs text-gray-400">Website URL</span>
+                          <span className="text-sm text-blue-600 truncate block">{getValues("website")}</span>
+                        </div>
+                      )}
+                      {getValues("customerCount") && (
+                        <div>
+                          <span className="block text-xs text-gray-400">Customer Count</span>
+                          <span className="text-sm text-gray-700">
+                            {!Number.isNaN(Number(getValues("customerCount")))
+                              ? Number(getValues("customerCount")).toLocaleString()
+                              : "N/A"}
+                          </span>
+                        </div>
+                      )}
+                      {getValues("traffic") && (
+                        <div>
+                          <span className="block text-xs text-gray-400">Monthly Traffic</span>
+                          <span className="text-sm text-gray-700">{getValues("traffic")}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 max-w-md mx-auto">
-                  <p className="text-sm text-blue-800">
+
+                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 max-w-md mx-auto">
+                  <p className="text-xs text-blue-800">
                     <strong>What happens next:</strong> Our team will review your submission
                     within 24-48 hours. You&apos;ll receive an email notification once approved.
                   </p>

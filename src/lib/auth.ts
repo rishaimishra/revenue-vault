@@ -20,14 +20,18 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         // @ts-ignore
         token.id = user.id;
         // @ts-ignore
         token.role = user.role;
-      } else if (!token.role) {
-        // Fetch role from DB if not in token
+      }
+
+      if (trigger === "update" && session?.role) {
+        token.role = session.role;
+      } else if (token.sub) {
+        // Fetch fresh role from DB to ensure session stays in sync with onboarding/admin changes
         const dbUser = await prisma.user.findUnique({
           where: { id: token.sub },
           select: { role: true },

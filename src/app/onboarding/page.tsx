@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { User, Store, ArrowRight, Loader2 } from "lucide-react";
 
 export default function OnboardingPage() {
   const [role, setRole] = useState<"BUYER" | "SELLER" | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { update } = useSession();
 
   const handleComplete = async () => {
     if (!role) return;
@@ -21,6 +23,9 @@ export default function OnboardingPage() {
       });
 
       if (response.ok) {
+        // Update client-side session token to include the new role
+        await update({ role });
+        
         router.push(role === "SELLER" ? "/dashboard/seller" : "/marketplace");
         router.refresh();
       }

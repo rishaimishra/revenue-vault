@@ -7,8 +7,16 @@ import {
 export default function Home() {
   return (
     <div className="bg-slate-50/50 min-h-screen overflow-x-hidden">
-      {/* Hero Section */}
-      <section className="relative pt-12 pb-24 md:pt-20 md:pb-32 px-6 max-w-7xl mx-auto">
+      {/* Hero Section Wrapper with Custom Background Image */}
+      <div 
+        className="w-full relative overflow-hidden bg-no-repeat bg-cover bg-center border-b border-slate-100" 
+        style={{ backgroundImage: "url('/bg1.png')" }}
+      >
+        {/* Subtle glowing ambient layer */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/30 -z-20 pointer-events-none"></div>
+
+        {/* Hero Section */}
+        <section className="relative pt-12 pb-24 md:pt-20 md:pb-32 px-6 max-w-7xl mx-auto z-10">
         {/* Decorative Background Elements */}
         <div className="absolute top-1/4 right-0 w-[450px] h-[450px] bg-gradient-to-tr from-indigo-500/10 to-purple-500/10 blur-3xl rounded-full -z-10 pointer-events-none"></div>
         <div className="absolute top-10 left-10 w-[300px] h-[300px] bg-gradient-to-br from-blue-500/5 to-indigo-500/5 blur-3xl rounded-full -z-10 pointer-events-none"></div>
@@ -241,6 +249,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </div>
 
       {/* Social Proof Brand Grid */}
       <section className="bg-white border-y border-slate-100 py-16 px-6">
