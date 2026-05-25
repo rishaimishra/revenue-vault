@@ -12,6 +12,8 @@ export const Navbar = () => {
   const [isResourcesOpen, setIsResourcesOpen] = useState(false);
   const pathname = usePathname();
 
+  if (pathname.startsWith("/admin")) return null;
+
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const isActive = (path: string) => pathname === path;
@@ -87,7 +89,7 @@ export const Navbar = () => {
                     <ShieldCheck className="w-4 h-4" /> Admin
                   </Link>
                 )}
-                {(session.user as any).role === 'SELLER' ? (
+                {(session.user as any).role === 'SELLER' && (
                   <Link
                     href="/dashboard/seller"
                     className={`text-[15px] font-semibold transition-colors flex items-center gap-1.5 ${
@@ -96,7 +98,8 @@ export const Navbar = () => {
                   >
                     <Store className="w-4 h-4" /> Dashboard
                   </Link>
-                ) : (
+                )}
+                {(session.user as any).role === 'BUYER' && (
                   <Link
                     href="/dashboard/buyer"
                     className={`text-[15px] font-semibold transition-colors flex items-center gap-1.5 ${
@@ -172,7 +175,12 @@ export const Navbar = () => {
               {(session.user as any).role === 'ADMIN' && (
                 <Link href="/admin" onClick={toggleMenu} className="block text-lg font-semibold text-purple-600">Admin Panel</Link>
               )}
-              <Link href={(session.user as any).role === 'SELLER' ? "/dashboard/seller" : "/dashboard/buyer"} onClick={toggleMenu} className="block text-lg font-semibold text-slate-800">Dashboard</Link>
+              {(session.user as any).role === 'SELLER' && (
+                <Link href="/dashboard/seller" onClick={toggleMenu} className="block text-lg font-semibold text-slate-800">Dashboard</Link>
+              )}
+              {(session.user as any).role === 'BUYER' && (
+                <Link href="/dashboard/buyer" onClick={toggleMenu} className="block text-lg font-semibold text-slate-800">Dashboard</Link>
+              )}
               <Link href="/profile" onClick={toggleMenu} className="block text-lg font-semibold text-slate-800">Profile</Link>
               <button
                 onClick={() => signOut()}

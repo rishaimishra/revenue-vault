@@ -127,7 +127,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
 
         {/* Sidebar */}
         <div className="w-full md:w-80 lg:w-96 space-y-6">
-          {!isSeller && (
+          {!isSeller && !isAdmin && (
             <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
               <div className="space-y-4">
                 <h3 className="font-bold text-gray-900 text-lg">Interested in this deal?</h3>
@@ -226,7 +226,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
             </div>
           )}
 
-          {session && !isSeller && (
+          {session && !isSeller && !isAdmin && (
             <ReportListingButton listingId={listing.id} />
           )}
         </div>

@@ -1,13 +1,32 @@
 "use client";
 
-import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { Shield, Mail, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState<string | null>(null);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      // @ts-ignore
+      const role = session.user.role;
+      if (role === "ADMIN") {
+        router.push("/admin");
+      } else if (role === "SELLER") {
+        router.push("/dashboard/seller");
+      } else if (role === "BUYER") {
+        router.push("/marketplace");
+      } else {
+        router.push("/onboarding");
+      }
+    }
+  }, [session, status, router]);
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();

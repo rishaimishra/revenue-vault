@@ -111,7 +111,9 @@ export default function NewListingPage() {
     } else if (status === "authenticated" && session?.user) {
       // @ts-ignore
       const role = session.user.role;
-      if (role !== "SELLER" && role !== "ADMIN") {
+      if (role === "ADMIN") {
+        router.push("/admin");
+      } else if (role !== "SELLER") {
         router.push("/onboarding");
       }
     }

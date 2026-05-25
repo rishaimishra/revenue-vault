@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { User, Store, ArrowRight, Loader2 } from "lucide-react";
@@ -9,7 +9,21 @@ export default function OnboardingPage() {
   const [role, setRole] = useState<"BUYER" | "SELLER" | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { update } = useSession();
+  const { data: session, status, update } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      // @ts-ignore
+      const role = session.user.role;
+      if (role === "ADMIN") {
+        router.push("/admin");
+      } else if (role === "SELLER") {
+        router.push("/dashboard/seller");
+      } else if (role === "BUYER") {
+        router.push("/marketplace");
+      }
+    }
+  }, [session, status, router]);
 
   const handleComplete = async () => {
     if (!role) return;

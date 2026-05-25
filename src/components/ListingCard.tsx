@@ -97,21 +97,23 @@ export const ListingCard = ({ listing, isBookmarked: initialIsBookmarked }: List
             </p>
           )}
         </div>
-        <button
-          onClick={handleBookmark}
-          disabled={isLoading}
-          className={`p-2.5 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all duration-200 active:scale-95 shrink-0 ${
-            isBookmarked 
-              ? 'text-indigo-600 bg-indigo-50/50 hover:bg-indigo-50 border-indigo-100/50' 
-              : 'text-slate-400 bg-slate-50/30'
-          }`}
-        >
-          {isLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Bookmark className="w-4 h-4 transition-transform group-hover:scale-105" fill={isBookmarked ? "currentColor" : "none"} />
-          )}
-        </button>
+        {session?.user && (session.user as any).role === "ADMIN" ? null : (
+          <button
+            onClick={handleBookmark}
+            disabled={isLoading}
+            className={`p-2.5 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all duration-200 active:scale-95 shrink-0 ${
+              isBookmarked 
+                ? 'text-indigo-600 bg-indigo-50/50 hover:bg-indigo-50 border-indigo-100/50' 
+                : 'text-slate-400 bg-slate-50/30'
+            }`}
+          >
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Bookmark className="w-4 h-4 transition-transform group-hover:scale-105" fill={isBookmarked ? "currentColor" : "none"} />
+            )}
+          </button>
+        )}
       </div>
 
       {/* Description */}

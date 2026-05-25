@@ -87,21 +87,23 @@ export default async function MarketplacePage(props: {
               </p>
             </div>
             
-            <Link
-              href="/listings/new"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white px-6 py-4 rounded-2xl font-black text-sm hover:shadow-lg hover:shadow-indigo-500/20 active:scale-[0.98] transition-all duration-300 border border-indigo-500/10 group"
-            >
-              List Your Startup
-              <svg 
-                className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor" 
-                strokeWidth="2.5"
+            {session?.user && (session.user as any).role === "ADMIN" ? null : (
+              <Link
+                href="/listings/new"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white px-6 py-4 rounded-2xl font-black text-sm hover:shadow-lg hover:shadow-indigo-500/20 active:scale-[0.98] transition-all duration-300 border border-indigo-500/10 group"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-            </Link>
+                List Your Startup
+                <svg 
+                  className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor" 
+                  strokeWidth="2.5"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+              </Link>
+            )}
           </div>
         </div>
       </div>
