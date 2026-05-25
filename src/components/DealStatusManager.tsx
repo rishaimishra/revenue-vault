@@ -23,7 +23,7 @@ export const DealStatusManager = ({ dealId, currentStatus, isSeller }: DealStatu
   ];
 
   const handleUpdateStatus = async (newStatus: DealStatus) => {
-    if (!isSeller && newStatus !== "CLOSED") return; // Only seller can move it forward mostly
+    if (!isSeller && newStatus !== "CLOSED") return;
 
     setIsLoading(true);
     try {
@@ -56,36 +56,41 @@ export const DealStatusManager = ({ dealId, currentStatus, isSeller }: DealStatu
           return (
             <div
               key={status.value}
-              className={`flex items-start gap-3 p-3 rounded-lg border transition-all ${
-                isCurrent ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500" :
-                isCompleted ? "border-green-200 bg-green-50" : "border-gray-100 bg-gray-50 opacity-60"
+              className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
+                isCurrent 
+                  ? "border-blue-500 bg-blue-50/70 shadow-sm ring-2 ring-blue-100/50" 
+                  : isCompleted 
+                    ? "border-emerald-100 bg-emerald-50/40" 
+                    : "border-slate-100 bg-slate-50/30 opacity-50 hover:opacity-75"
               }`}
             >
               <div className="mt-0.5">
                 {isCompleted ? (
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 fill-emerald-50" />
                 ) : (
                   <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center text-[10px] font-bold ${
-                    isCurrent ? "border-blue-500 text-blue-500" : "border-gray-300 text-gray-400"
+                    isCurrent ? "border-blue-600 text-blue-600 bg-white" : "border-slate-300 text-slate-400"
                   }`}>
                     {index + 1}
                   </div>
                 )}
               </div>
-              <div className="flex-1">
-                <p className={`text-sm font-bold ${isCurrent ? "text-blue-900" : isCompleted ? "text-green-900" : "text-gray-500"}`}>
+              <div className="flex-1 min-w-0">
+                <p className={`text-xs font-bold tracking-tight ${
+                  isCurrent ? "text-blue-900" : isCompleted ? "text-emerald-900" : "text-slate-500"
+                }`}>
                   {status.label}
                 </p>
-                <p className="text-[10px] text-gray-400 font-medium">{status.description}</p>
+                <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{status.description}</p>
               </div>
               {isSeller && isFuture && index === currentIndex + 1 && (
                 <button
                   onClick={() => handleUpdateStatus(status.value)}
                   disabled={isLoading}
-                  className="bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded hover:bg-blue-700 transition-colors flex items-center gap-1 disabled:bg-blue-400"
+                  className="bg-blue-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-blue-700 active:scale-95 transition-all shadow-sm shadow-blue-500/10 flex items-center gap-1 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none cursor-pointer"
                 >
-                  {isLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <ArrowRight className="w-3 h-3" />}
-                  Move to {status.label}
+                  {isLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <ArrowRight className="w-3.5 h-3.5" />}
+                  Advance
                 </button>
               )}
             </div>
@@ -94,12 +99,14 @@ export const DealStatusManager = ({ dealId, currentStatus, isSeller }: DealStatu
       </div>
 
       {!isSeller && currentStatus === "IN_PROGRESS" && (
-        <div className="p-4 bg-orange-50 border border-orange-100 rounded-lg">
-          <p className="text-xs text-orange-800 font-medium">
-            Negotiations are in progress. The seller will mark the deal as closed once finalized.
+        <div className="p-4 bg-amber-50/70 border border-amber-100/80 rounded-xl flex items-start gap-3">
+          <span className="w-2 h-2 rounded-full bg-amber-500 mt-1.5 animate-ping flex-shrink-0"></span>
+          <p className="text-xs text-amber-800 font-semibold leading-relaxed">
+            Negotiations are currently in progress. The seller will mark the deal as closed once finalized.
           </p>
         </div>
       )}
     </div>
   );
 };
+
