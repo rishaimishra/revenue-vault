@@ -26,18 +26,22 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         // @ts-ignore
         token.role = user.role;
+        // @ts-ignore
+        token.isOnboarded = user.isOnboarded;
       }
 
-      if (trigger === "update" && session?.role) {
-        token.role = session.role;
+      if (trigger === "update" && session) {
+        if (session.role) token.role = session.role;
+        if (session.isOnboarded !== undefined) token.isOnboarded = session.isOnboarded;
       } else if (token.sub) {
-        // Fetch fresh role from DB to ensure session stays in sync with onboarding/admin changes
+        // Fetch fresh role and isOnboarded from DB to ensure session stays in sync with onboarding/admin changes
         const dbUser = await prisma.user.findUnique({
           where: { id: token.sub },
-          select: { role: true },
+          select: { role: true, isOnboarded: true },
         });
         if (dbUser) {
           token.role = dbUser.role;
+          token.isOnboarded = dbUser.isOnboarded;
         }
       }
       return token;
@@ -48,6 +52,8 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id;
         // @ts-ignore
         session.user.role = token.role;
+        // @ts-ignore
+        session.user.isOnboarded = token.isOnboarded;
       }
       return session;
     },

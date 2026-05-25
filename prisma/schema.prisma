@@ -71,6 +71,7 @@ model User {
   emailVerified DateTime?
   image         String?
   role          UserRole  @default(BUYER)
+  isOnboarded   Boolean   @default(false)
 
   accounts      Account[]
   sessions      Session[]

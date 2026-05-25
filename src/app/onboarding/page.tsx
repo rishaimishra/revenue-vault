@@ -37,8 +37,8 @@ export default function OnboardingPage() {
       });
 
       if (response.ok) {
-        // Update client-side session token to include the new role
-        await update({ role });
+        // Update client-side session token to include the new role and onboarding status
+        await update({ role, isOnboarded: true });
         
         router.push(role === "SELLER" ? "/dashboard/seller" : "/marketplace");
         router.refresh();

@@ -20,7 +20,10 @@ export async function PATCH(req: Request) {
 
     const updatedUser = await prisma.user.update({
       where: { id: (session.user as any).id },
-      data: { role },
+      data: { 
+        role,
+        isOnboarded: true
+      },
     });
 
     return NextResponse.json(updatedUser);

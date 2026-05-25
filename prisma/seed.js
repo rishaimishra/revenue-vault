@@ -12,6 +12,7 @@ async function main() {
       name: 'John Seller',
       role: 'SELLER',
       isVerified: true,
+      isOnboarded: true,
     },
   });
 
@@ -23,6 +24,7 @@ async function main() {
       email: 'buyer@example.com',
       name: 'Jane Buyer',
       role: 'BUYER',
+      isOnboarded: true,
     },
   });
 
