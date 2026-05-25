@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { ListingCard } from "@/components/ListingCard";
 import { SearchBar } from "@/components/marketplace/SearchBar";
+import { FilterSidebar } from "@/components/marketplace/FilterSidebar";
 import Link from "next/link";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -9,6 +10,48 @@ import { authOptions } from "@/lib/auth";
 async function getListings(searchParams: { [key: string]: string | string[] | undefined }) {
   const category = typeof searchParams.category === 'string' ? searchParams.category : undefined;
   const q = typeof searchParams.q === 'string' ? searchParams.q : undefined;
+
+  // Numerical Range Filters
+  const minPrice = typeof searchParams.minPrice === 'string' ? parseFloat(searchParams.minPrice) : undefined;
+  const maxPrice = typeof searchParams.maxPrice === 'string' ? parseFloat(searchParams.maxPrice) : undefined;
+  const minRevenue = typeof searchParams.minRevenue === 'string' ? parseFloat(searchParams.minRevenue) : undefined;
+  const maxRevenue = typeof searchParams.maxRevenue === 'string' ? parseFloat(searchParams.maxRevenue) : undefined;
+  const minProfit = typeof searchParams.minProfit === 'string' ? parseFloat(searchParams.minProfit) : undefined;
+  const maxProfit = typeof searchParams.maxProfit === 'string' ? parseFloat(searchParams.maxProfit) : undefined;
+  
+  // Verification Filter
+  const verified = typeof searchParams.verified === 'string' ? searchParams.verified === 'true' : undefined;
+
+  // Sorting
+  const sortBy = typeof searchParams.sortBy === 'string' ? searchParams.sortBy : 'newest';
+
+  // Construct filters
+  const priceFilter: { gte?: number; lte?: number } = {};
+  if (minPrice !== undefined && !isNaN(minPrice)) priceFilter.gte = minPrice;
+  if (maxPrice !== undefined && !isNaN(maxPrice)) priceFilter.lte = maxPrice;
+
+  const revenueFilter: { gte?: number; lte?: number } = {};
+  if (minRevenue !== undefined && !isNaN(minRevenue)) revenueFilter.gte = minRevenue;
+  if (maxRevenue !== undefined && !isNaN(maxRevenue)) revenueFilter.lte = maxRevenue;
+
+  const profitFilter: { gte?: number; lte?: number } = {};
+  if (minProfit !== undefined && !isNaN(minProfit)) profitFilter.gte = minProfit;
+  if (maxProfit !== undefined && !isNaN(maxProfit)) profitFilter.lte = maxProfit;
+
+  const orderByClause: Record<string, "asc" | "desc">[] = [];
+  if (sortBy === 'price_asc') {
+    orderByClause.push({ price: 'asc' });
+  } else if (sortBy === 'price_desc') {
+    orderByClause.push({ price: 'desc' });
+  } else if (sortBy === 'revenue_desc') {
+    orderByClause.push({ revenue: 'desc' });
+  } else if (sortBy === 'profit_desc') {
+    orderByClause.push({ profit: 'desc' });
+  } else {
+    // Default newest (Featured listings always boosted to top)
+    orderByClause.push({ isFeatured: 'desc' });
+    orderByClause.push({ createdAt: 'desc' });
+  }
 
   const listings = await prisma.startupListing.findMany({
     where: {
@@ -22,6 +65,10 @@ async function getListings(searchParams: { [key: string]: string | string[] | un
           { category: { contains: q, mode: "insensitive" } },
         ]
       } : {}),
+      ...(Object.keys(priceFilter).length > 0 ? { price: priceFilter } : {}),
+      ...(Object.keys(revenueFilter).length > 0 ? { revenue: revenueFilter } : {}),
+      ...(Object.keys(profitFilter).length > 0 ? { profit: profitFilter } : {}),
+      ...(verified ? { seller: { isVerified: true } } : {}),
     },
     include: {
       seller: {
@@ -31,10 +78,7 @@ async function getListings(searchParams: { [key: string]: string | string[] | un
         },
       },
     },
-    orderBy: [
-      { isFeatured: "desc" },
-      { createdAt: "desc" },
-    ],
+    orderBy: orderByClause,
   });
 
   return listings;
@@ -63,7 +107,21 @@ export default async function MarketplacePage(props: {
     "SaaS", "E-commerce", "Marketplace", "Agency", "Mobile App", "Content Site", "Other"
   ];
 
-  const qVal = typeof searchParams.q === 'string' ? searchParams.q : undefined;
+  // Helper to build category URLs while preserving all existing active filters
+  const getCategoryUrl = (cat: string | null) => {
+    const params = new URLSearchParams();
+    Object.entries(searchParams).forEach(([key, val]) => {
+      if (typeof val === 'string') {
+        params.set(key, val);
+      }
+    });
+    if (cat) {
+      params.set("category", cat);
+    } else {
+      params.delete("category");
+    }
+    return `/marketplace?${params.toString()}`;
+  };
 
   return (
     <div className="min-h-screen bg-slate-50/30 pb-20">
@@ -87,7 +145,7 @@ export default async function MarketplacePage(props: {
               </p>
             </div>
             
-            {session?.user && (session.user as any).role !== "SELLER" ? null : (
+            {session?.user && (session.user as { role?: string }).role !== "SELLER" ? null : (
               <Link
                 href="/listings/new"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white px-6 py-4 rounded-2xl font-black text-sm hover:shadow-lg hover:shadow-indigo-500/20 active:scale-[0.98] transition-all duration-300 border border-indigo-500/10 group"
@@ -119,10 +177,10 @@ export default async function MarketplacePage(props: {
           {/* Sleek Horizontal Pill Layout for Categories */}
           <div className="flex flex-wrap justify-center gap-2.5 w-full">
             <Link
-              href={`/marketplace${qVal ? `?q=${encodeURIComponent(qVal)}` : ""}`}
+              href={getCategoryUrl(null)}
               className={`px-4 py-2.5 rounded-2xl border text-xs font-bold transition-all duration-200 active:scale-95 ${
                 !searchParams.category
-                  ? "bg-gradient-to-r from-indigo-600 to-blue-600 border-indigo-500 text-white shadow-glow-blue shadow-md animate-pulse"
+                  ? "bg-gradient-to-r from-indigo-600 to-blue-600 border-indigo-500 text-white shadow-glow-blue shadow-md"
                   : "bg-white/80 backdrop-blur-sm border-slate-200/60 text-slate-600 hover:text-indigo-600 hover:border-indigo-300 hover:bg-white hover:shadow-sm"
               }`}
             >
@@ -133,7 +191,7 @@ export default async function MarketplacePage(props: {
               return (
                 <Link
                   key={cat}
-                  href={`/marketplace?category=${encodeURIComponent(cat)}${qVal ? `&q=${encodeURIComponent(qVal)}` : ""}`}
+                  href={getCategoryUrl(cat)}
                   className={`px-4 py-2.5 rounded-2xl border text-xs font-bold transition-all duration-200 active:scale-95 ${
                     isActive
                       ? "bg-gradient-to-r from-indigo-600 to-blue-600 border-indigo-500 text-white shadow-glow-blue shadow-md"
@@ -147,44 +205,54 @@ export default async function MarketplacePage(props: {
           </div>
         </div>
 
-        {/* Listings Section */}
-        {listings.length === 0 ? (
-          <div className="text-center py-20 bg-white/70 backdrop-blur-md rounded-[2.5rem] border border-slate-200/50 shadow-premium max-w-2xl mx-auto">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100/50 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm">
-              <svg 
-                className="w-8 h-8 text-indigo-400" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor" 
-                strokeWidth="1.5"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
-            </div>
-            <h3 className="text-slate-800 text-lg font-extrabold tracking-tight">No startups found</h3>
-            <p className="text-slate-500 text-sm mt-1.5 max-w-sm mx-auto">
-              We couldn&apos;t find any startups matching your criteria. Try adjusting your query or resetting filters.
-            </p>
-            <div className="mt-6 flex justify-center gap-3">
-              <Link
-                href="/marketplace"
-                className="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-indigo-600 transition-all shadow-sm"
-              >
-                Clear all filters
-              </Link>
-            </div>
+        {/* Main Content Area - Split Sidebar / Grid Layout */}
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          {/* Filters Sidebar */}
+          <Suspense fallback={<div className="w-full lg:w-80 h-96 bg-white/70 backdrop-blur-md border border-slate-100 rounded-3xl animate-pulse" />}>
+            <FilterSidebar categories={categories} />
+          </Suspense>
+
+          {/* Listings Grid */}
+          <div className="flex-1 w-full">
+            {listings.length === 0 ? (
+              <div className="text-center py-20 bg-white/70 backdrop-blur-md rounded-[2.5rem] border border-slate-200/50 shadow-premium max-w-2xl mx-auto">
+                <div className="w-16 h-16 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100/50 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm">
+                  <svg 
+                    className="w-8 h-8 text-indigo-400" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor" 
+                    strokeWidth="1.5"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                  </svg>
+                </div>
+                <h3 className="text-slate-800 text-lg font-extrabold tracking-tight">No startups found</h3>
+                <p className="text-slate-500 text-sm mt-1.5 max-w-sm mx-auto">
+                  We couldn&apos;t find any startups matching your criteria. Try adjusting your query or resetting filters.
+                </p>
+                <div className="mt-6 flex justify-center gap-3">
+                  <Link
+                    href="/marketplace"
+                    className="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-indigo-600 transition-all shadow-sm"
+                  >
+                    Clear all filters
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {listings.map((listing) => (
+                  <ListingCard
+                    key={listing.id}
+                    listing={listing}
+                    isBookmarked={bookmarkedListingIds.has(listing.id)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {listings.map((listing) => (
-              <ListingCard
-                key={listing.id}
-                listing={listing}
-                isBookmarked={bookmarkedListingIds.has(listing.id)}
-              />
-            ))}
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
