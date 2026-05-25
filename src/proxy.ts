@@ -28,6 +28,8 @@ export default withAuth(
         return NextResponse.redirect(new URL("/admin", req.url));
       } else if (token.role === "SELLER") {
         return NextResponse.redirect(new URL("/dashboard/seller", req.url));
+      } else if (token.role === "BUYER") {
+        return NextResponse.redirect(new URL("/dashboard/buyer", req.url));
       } else {
         return NextResponse.redirect(new URL("/marketplace", req.url));
       }
@@ -36,6 +38,11 @@ export default withAuth(
     // 4. Admin Route Protection
     if (pathname.startsWith("/admin") && token?.role !== "ADMIN") {
       return NextResponse.redirect(new URL("/", req.url));
+    }
+
+    // 4.5 Listings/New Route Protection for Buyers
+    if (pathname.startsWith("/listings/new") && token?.role === "BUYER") {
+      return NextResponse.redirect(new URL("/dashboard/buyer", req.url));
     }
 
     // 5. Role-based Dashboard Protection

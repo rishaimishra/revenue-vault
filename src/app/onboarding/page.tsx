@@ -14,13 +14,17 @@ export default function OnboardingPage() {
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
       // @ts-ignore
+      const isOnboarded = session.user.isOnboarded;
+      // @ts-ignore
       const role = session.user.role;
-      if (role === "ADMIN") {
-        router.push("/admin");
-      } else if (role === "SELLER") {
-        router.push("/dashboard/seller");
-      } else if (role === "BUYER") {
-        router.push("/marketplace");
+      if (isOnboarded) {
+        if (role === "ADMIN") {
+          router.push("/admin");
+        } else if (role === "SELLER") {
+          router.push("/dashboard/seller");
+        } else if (role === "BUYER") {
+          router.push("/dashboard/buyer");
+        }
       }
     }
   }, [session, status, router]);
@@ -40,7 +44,7 @@ export default function OnboardingPage() {
         // Update client-side session token to include the new role and onboarding status
         await update({ role, isOnboarded: true });
         
-        router.push(role === "SELLER" ? "/dashboard/seller" : "/marketplace");
+        router.push(role === "SELLER" ? "/dashboard/seller" : "/dashboard/buyer");
         router.refresh();
       }
     } catch (error) {

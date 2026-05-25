@@ -113,6 +113,8 @@ export default function NewListingPage() {
       const role = session.user.role;
       if (role === "ADMIN") {
         router.push("/admin");
+      } else if (role === "BUYER") {
+        router.push("/dashboard/buyer");
       } else if (role !== "SELLER") {
         router.push("/onboarding");
       }

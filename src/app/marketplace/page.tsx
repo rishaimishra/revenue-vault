@@ -87,7 +87,7 @@ export default async function MarketplacePage(props: {
               </p>
             </div>
             
-            {session?.user && (session.user as any).role === "ADMIN" ? null : (
+            {session?.user && (session.user as any).role !== "SELLER" ? null : (
               <Link
                 href="/listings/new"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white px-6 py-4 rounded-2xl font-black text-sm hover:shadow-lg hover:shadow-indigo-500/20 active:scale-[0.98] transition-all duration-300 border border-indigo-500/10 group"

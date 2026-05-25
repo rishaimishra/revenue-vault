@@ -84,7 +84,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
               <span className="text-sm text-gray-500 flex items-center gap-1 font-medium">
                 <DollarSign className="w-4 h-4" /> Annual Revenue
               </span>
-              <span className={`text-2xl font-bold text-gray-900 ${!isApproved ? 'blur-sm select-none' : ''}`}>
+              <span className="text-2xl font-bold text-gray-900">
                 ${listing.revenue.toLocaleString()}
               </span>
             </div>
@@ -92,7 +92,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
               <span className="text-sm text-gray-500 flex items-center gap-1 font-medium">
                 <TrendingUp className="w-4 h-4" /> Annual Profit
               </span>
-              <span className={`text-2xl font-bold text-gray-900 ${!isApproved ? 'blur-sm select-none' : ''}`}>
+              <span className="text-2xl font-bold text-gray-900">
                 ${listing.profit.toLocaleString()}
               </span>
             </div>
@@ -108,19 +108,12 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
 
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-gray-900">About this Startup</h2>
-            <div className="prose prose-blue max-w-none text-gray-600 leading-relaxed relative">
+            <div className="prose prose-blue max-w-none text-gray-600 leading-relaxed">
               {listing.description.split('\n').map((para, i) => (
-                <p key={i} className={!isApproved && i > 0 ? 'blur-sm select-none' : ''}>
+                <p key={i}>
                   {para}
                 </p>
               ))}
-              {!isApproved && (
-                <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-transparent to-transparent flex items-end justify-center pb-8">
-                  <div className="bg-gray-900 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg">
-                    Detailed info hidden until access is approved
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -132,7 +125,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
               <div className="space-y-4">
                 <h3 className="font-bold text-gray-900 text-lg">Interested in this deal?</h3>
                 <p className="text-sm text-gray-600">
-                  You need to request access to message the seller and view sensitive details.
+                  You need to request access to view contact details and message the seller.
                 </p>
 
                 {!session ? (
@@ -158,8 +151,8 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                 )}
               </div>
 
-              <div className="pt-6 border-t border-gray-100">
-                <div className="flex items-center gap-3">
+              <div className="pt-6 border-t border-gray-100 relative overflow-hidden">
+                <div className={`flex items-center gap-3 transition-all ${!isApproved ? 'blur-[4px] select-none pointer-events-none' : ''}`}>
                   <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-lg font-bold text-gray-500">
                     {listing.seller.name?.[0] || 'S'}
                   </div>
@@ -173,6 +166,13 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                     <p className="text-xs text-gray-500">Seller since {new Date(listing.seller.createdAt).getFullYear()}</p>
                   </div>
                 </div>
+                {!isApproved && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/70">
+                    <span className="text-xs font-bold text-gray-600 bg-gray-50 border border-gray-200/80 px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5">
+                      🔒 Contact details locked
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -183,7 +183,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                  <ShieldCheck className="w-4 h-4" /> You own this listing
                </h4>
                <p className="text-xs text-blue-800 leading-normal">
-                 As the seller, you can see all details. Buyers will need to request access before they can see sensitive information and start a chat with you.
+                 As the seller, you can see all details. Buyers will need to request access before they can see your contact details and start a chat with you.
                </p>
                {listing.status === "REJECTED" && listing.rejectionReason && (
                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg space-y-1 animate-pulse-subtle">

@@ -3,8 +3,11 @@ import {
   ArrowRight, ShieldCheck, Zap, Lock, BarChart3, TrendingUp, Check, 
   Search, Bell, Sparkles, Star, MessageSquare, Files, SlidersHorizontal, Eye
 } from "lucide-react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
   return (
     <div className="bg-slate-50/50 min-h-screen overflow-x-hidden">
       {/* Hero Section Wrapper with Custom Background Image */}
@@ -46,12 +49,14 @@ export default function Home() {
               >
                 Explore Marketplace <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link
-                href="/onboarding"
-                className="w-full sm:w-auto bg-white border border-indigo-100 text-indigo-600 px-8 py-4.5 rounded-full font-bold text-base hover:bg-indigo-50/20 hover:border-indigo-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center shadow-sm"
-              >
-                List Your Startup
-              </Link>
+              {(!session?.user || (session.user as any).role === "SELLER") && (
+                <Link
+                  href="/onboarding"
+                  className="w-full sm:w-auto bg-white border border-indigo-100 text-indigo-600 px-8 py-4.5 rounded-full font-bold text-base hover:bg-indigo-50/20 hover:border-indigo-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center shadow-sm"
+                >
+                  List Your Startup
+                </Link>
+              )}
             </div>
 
             {/* Badges/Trust Row */}

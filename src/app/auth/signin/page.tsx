@@ -15,15 +15,22 @@ export default function SignInPage() {
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
       // @ts-ignore
+      const isOnboarded = session.user.isOnboarded;
+      // @ts-ignore
       const role = session.user.role;
-      if (role === "ADMIN") {
-        router.push("/admin");
-      } else if (role === "SELLER") {
-        router.push("/dashboard/seller");
-      } else if (role === "BUYER") {
-        router.push("/marketplace");
-      } else {
+      
+      if (!isOnboarded) {
         router.push("/onboarding");
+      } else {
+        if (role === "ADMIN") {
+          router.push("/admin");
+        } else if (role === "SELLER") {
+          router.push("/dashboard/seller");
+        } else if (role === "BUYER") {
+          router.push("/dashboard/buyer");
+        } else {
+          router.push("/onboarding");
+        }
       }
     }
   }, [session, status, router]);
