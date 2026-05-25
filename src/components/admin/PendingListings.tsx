@@ -32,6 +32,12 @@ export const PendingListings = ({ listings }: { listings: any[] }) => {
               <p className="text-sm text-gray-600 line-clamp-2 mb-5 italic">
                 "{listing.description}"
               </p>
+              {listing.status === "REJECTED" && listing.rejectionReason && (
+                <div className="mb-5 p-3 bg-red-50/50 border border-red-100 rounded-xl text-xs flex flex-col gap-1">
+                  <span className="font-semibold text-red-800">Rejection Reason:</span>
+                  <p className="text-red-700 font-medium leading-relaxed">{listing.rejectionReason}</p>
+                </div>
+              )}
               <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                 <div className="flex gap-4">
                   <div className="text-[10px] uppercase font-bold text-gray-400">

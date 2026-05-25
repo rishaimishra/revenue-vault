@@ -148,7 +148,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                   </button>
                 ) : accessRequest?.status === "APPROVED" ? (
                   <Link
-                    href={`/messages/${listing.id}`}
+                    href={`/messages/${listing.id}-${user?.id}`}
                     className="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors block text-center"
                   >
                     Open Conversation
@@ -185,6 +185,12 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
                <p className="text-xs text-blue-800 leading-normal">
                  As the seller, you can see all details. Buyers will need to request access before they can see sensitive information and start a chat with you.
                </p>
+               {listing.status === "REJECTED" && listing.rejectionReason && (
+                 <div className="p-3 bg-red-50 border border-red-200 rounded-lg space-y-1 animate-pulse-subtle">
+                   <p className="text-xs font-bold text-red-700">Rejection Reason:</p>
+                   <p className="text-xs text-red-600 leading-normal">{listing.rejectionReason}</p>
+                 </div>
+               )}
                <div className="flex gap-2">
                  <Link
                    href={`/listings/${id}/edit`}

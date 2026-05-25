@@ -8,7 +8,7 @@ import Link from "next/link";
 import { DealStatusManager } from "@/components/DealStatusManager";
 
 async function getDeal(id: string, userId: string) {
-  const deal = await prisma.deal.findUnique({
+  let deal = await prisma.deal.findUnique({
     where: { id },
     include: {
       listing: {
@@ -31,6 +31,40 @@ async function getDeal(id: string, userId: string) {
       }
     }
   });
+
+  // Fallback: If no deal is found directly by ID, the ID might be a listing ID.
+  // Find a deal for this listing where the current user is either the buyer or the seller.
+  if (!deal) {
+    deal = await prisma.deal.findFirst({
+      where: {
+        listingId: id,
+        OR: [
+          { buyerId: userId },
+          { listing: { sellerId: userId } }
+        ]
+      },
+      include: {
+        listing: {
+          include: {
+            seller: {
+              select: { id: true, name: true, isVerified: true }
+            }
+          }
+        },
+        buyer: {
+          select: { id: true, name: true, isVerified: true }
+        },
+        messages: {
+          orderBy: { createdAt: "asc" },
+          include: {
+            sender: {
+              select: { name: true, image: true }
+            }
+          }
+        }
+      }
+    });
+  }
 
   if (!deal) return null;
 

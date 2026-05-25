@@ -178,11 +178,21 @@ export default async function SellerDashboardPage() {
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${
                         listing.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' :
                         listing.status === 'PENDING_APPROVAL' ? 'bg-yellow-100 text-yellow-700' :
+                        listing.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
                         'bg-gray-100 text-gray-700'
                       }`}>
                         {listing.status.replace('_', ' ')}
                       </span>
                     </div>
+                    {listing.status === "REJECTED" && listing.rejectionReason && (
+                      <div className="mt-1 mb-3 p-2.5 bg-red-50/70 border border-red-100 rounded-lg text-xs flex flex-col gap-1">
+                        <span className="font-semibold text-red-800 flex items-center gap-1">
+                          <X className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                          Rejection Reason:
+                        </span>
+                        <p className="text-red-700 pl-4.5 font-medium leading-relaxed">{listing.rejectionReason}</p>
+                      </div>
+                    )}
                     <div className="grid grid-cols-2 gap-2 mb-3">
                       <div className="bg-gray-50 p-2 rounded">
                         <p className="text-[10px] text-gray-400 uppercase">Price</p>
