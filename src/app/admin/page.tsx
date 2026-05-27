@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { AdminListingActions } from "@/components/admin/AdminListingActions";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 async function getAdminData() {
   const [
@@ -81,7 +82,9 @@ async function getAdminData() {
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
-  if (!session || !session.user || (session.user as any).role !== "ADMIN") return null;
+  if (!session || !session.user || (session.user as any).role !== "ADMIN") {
+    redirect("/");
+  }
 
   const { stats, pendingListings, recentReports, recentUsers } = await getAdminData();
 

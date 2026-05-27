@@ -28,6 +28,19 @@ async function main() {
     },
   });
 
+  // Create an admin
+  const admin = await prisma.user.upsert({
+    where: { email: 'admin@example.com' },
+    update: {},
+    create: {
+      email: 'admin@example.com',
+      name: 'System Administrator',
+      role: 'ADMIN',
+      isVerified: true,
+      isOnboarded: true,
+    },
+  });
+
   // Create dummy listings
   await prisma.startupListing.createMany({
     data: [
