@@ -48,4 +48,33 @@ export const listingSchema = z.object({
 
 export type ListingInput = z.infer<typeof listingSchema>;
 
+export const blogPostSchema = z.object({
+  title: z.string().min(5, "Title must be at least 5 characters"),
+  slug: z.string().min(3, "Slug must be at least 3 characters").regex(/^[a-z0-9-]+$/, "Slug must only contain lowercase alphanumeric characters and hyphens"),
+  excerpt: z.string().optional().nullable(),
+  content: z.string().min(20, "Content must be at least 20 characters"),
+  coverImage: z.string().url("Invalid image URL").or(z.string().length(0)).optional().nullable(),
+  metaTitle: z.string().optional().nullable(),
+  metaDescription: z.string().optional().nullable(),
+  metaKeywords: z.string().optional().nullable(),
+  published: z.boolean(),
+});
+
+export type BlogPostInput = z.infer<typeof blogPostSchema>;
+
+export const crmNoteSchema = z.object({
+  content: z.string().min(2, "Note content must be at least 2 characters"),
+});
+
+export type CrmNoteInput = z.infer<typeof crmNoteSchema>;
+
+export const crmTaskSchema = z.object({
+  title: z.string().min(3, "Task title must be at least 3 characters"),
+  description: z.string().optional().nullable(),
+  dueDate: z.string().optional().nullable().transform((val) => (val ? new Date(val) : null)),
+});
+
+export type CrmTaskInput = z.infer<typeof crmTaskSchema>;
+
+
 

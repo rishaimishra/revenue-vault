@@ -69,9 +69,9 @@ export const Navbar = () => {
               </button>
               {isResourcesOpen && (
                 <div className="absolute top-full left-0 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl p-2 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
-                  <Link href="#" className="block px-4 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-xl transition-colors">Success Stories</Link>
-                  <Link href="#" className="block px-4 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-xl transition-colors">Guides & Blog</Link>
-                  <Link href="#" className="block px-4 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-xl transition-colors">Help Center</Link>
+                  <Link href="/blog?category=Success+Stories" className="block px-4 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-xl transition-colors">Success Stories</Link>
+                  <Link href="/blog" className="block px-4 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-xl transition-colors">Guides & Blog</Link>
+                  <Link href="/about" className="block px-4 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-xl transition-colors">Help Center</Link>
                 </div>
               )}
             </div>
@@ -164,9 +164,9 @@ export const Navbar = () => {
           </button>
           {isResourcesOpen && (
             <div className="pl-4 space-y-2 py-1 border-l-2 border-slate-100">
-              <Link href="#" onClick={toggleMenu} className="block text-base text-slate-600">Success Stories</Link>
-              <Link href="#" onClick={toggleMenu} className="block text-base text-slate-600">Guides & Blog</Link>
-              <Link href="#" onClick={toggleMenu} className="block text-base text-slate-600">Help Center</Link>
+              <Link href="/blog?category=Success+Stories" onClick={toggleMenu} className="block text-base text-slate-600">Success Stories</Link>
+              <Link href="/blog" onClick={toggleMenu} className="block text-base text-slate-600">Guides & Blog</Link>
+              <Link href="/about" onClick={toggleMenu} className="block text-base text-slate-600">Help Center</Link>
             </div>
           )}
           

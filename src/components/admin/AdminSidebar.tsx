@@ -24,6 +24,11 @@ export const AdminSidebar = () => {
     { name: "Support", href: "/admin/support", icon: MessageSquare },
   ];
 
+  const growthItems = [
+    { name: "Admin CRM", href: "/admin/crm", icon: Sparkles },
+    { name: "Blog Manager", href: "/admin/blog", icon: FileText },
+  ];
+
   return (
     <aside className="w-68 bg-white border-r border-slate-200/80 flex flex-col justify-between h-screen sticky top-0 z-30 shadow-xs shrink-0 select-none">
       
@@ -101,6 +106,38 @@ export const AdminSidebar = () => {
                     <span className="h-2 w-2 rounded-full bg-rose-500 ring-4 ring-rose-500/20 animate-pulse mr-1" />
                   )}
 
+                  {/* Visual Left Indicator Bar */}
+                  {isActive && (
+                    <span className="absolute left-0 top-3 bottom-3 w-1 bg-white rounded-r-md" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Growth & Content Section */}
+        <div className="space-y-2">
+          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-3 mb-3">Growth & Content</p>
+          <nav className="space-y-1">
+            {growthItems.map((item) => {
+              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`group flex items-center justify-between px-3.5 py-3 rounded-2xl text-sm font-semibold transition-all relative ${
+                    isActive
+                      ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100/60 border border-indigo-600"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-transparent"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <item.icon className={`w-4.5 h-4.5 transition-transform group-hover:scale-105 ${
+                      isActive ? "text-white" : "text-slate-400 group-hover:text-indigo-600"
+                    }`} />
+                    <span>{item.name}</span>
+                  </div>
                   {/* Visual Left Indicator Bar */}
                   {isActive && (
                     <span className="absolute left-0 top-3 bottom-3 w-1 bg-white rounded-r-md" />
