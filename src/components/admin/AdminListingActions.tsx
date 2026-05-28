@@ -6,9 +6,10 @@ import { Check, X, Loader2 } from "lucide-react";
 
 interface AdminListingActionsProps {
   listingId: string;
+  status: string;
 }
 
-export const AdminListingActions = ({ listingId }: AdminListingActionsProps) => {
+export const AdminListingActions = ({ listingId, status }: AdminListingActionsProps) => {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const router = useRouter();
 
@@ -36,6 +37,38 @@ export const AdminListingActions = ({ listingId }: AdminListingActionsProps) => 
       setIsLoading(null);
     }
   };
+
+  if (status === "PUBLISHED") {
+    return (
+      <div className="px-3 py-1.5 bg-green-50 text-green-700 text-xs font-bold rounded-lg border border-green-200 flex items-center gap-1 select-none">
+        <Check className="w-3.5 h-3.5" /> Approved
+      </div>
+    );
+  }
+
+  if (status === "REJECTED") {
+    return (
+      <div className="px-3 py-1.5 bg-red-50 text-red-700 text-xs font-bold rounded-lg border border-red-200 flex items-center gap-1 select-none">
+        <X className="w-3.5 h-3.5" /> Rejected
+      </div>
+    );
+  }
+
+  if (status === "SOLD") {
+    return (
+      <div className="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg border border-blue-200 flex items-center gap-1 select-none">
+        Sold
+      </div>
+    );
+  }
+
+  if (status === "DRAFT") {
+    return (
+      <div className="px-3 py-1.5 bg-slate-50 text-slate-600 text-xs font-bold rounded-lg border border-slate-200 flex items-center gap-1 select-none">
+        Draft
+      </div>
+    );
+  }
 
   return (
     <div className="flex gap-2">

@@ -340,7 +340,7 @@ export default async function AdminPage() {
                       >
                         Investigate Listing <ArrowUpRight className="w-3.5 h-3.5" />
                       </Link>
-                      <AdminListingActions listingId={listing.id} />
+                      <AdminListingActions listingId={listing.id} status={listing.status} />
                     </div>
                   </div>
 

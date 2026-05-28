@@ -54,7 +54,7 @@ export const PendingListings = ({ listings }: { listings: any[] }) => {
                     View Details
                   </a>
                 </div>
-                <AdminListingActions listingId={listing.id} />
+                <AdminListingActions listingId={listing.id} status={listing.status} />
               </div>
             </div>
           ))}
