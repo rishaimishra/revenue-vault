@@ -3,13 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { User, LogOut, Menu, X, LayoutDashboard, Store, ShieldCheck, ChevronDown, Lock } from "lucide-react";
+import { User, LogOut, Menu, X, LayoutDashboard, Store, ShieldCheck, Lock } from "lucide-react";
 import { useState } from "react";
 
 export const Navbar = () => {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isResourcesOpen, setIsResourcesOpen] = useState(false);
   const pathname = usePathname();
 
   if (pathname.startsWith("/admin")) return null;
@@ -56,25 +55,14 @@ export const Navbar = () => {
               How It Works
             </Link>
 
-            {/* Resources Dropdown */}
-            <div 
-              className="relative"
-              onMouseEnter={() => setIsResourcesOpen(true)}
-              onMouseLeave={() => setIsResourcesOpen(false)}
+            <Link
+              href="/blog"
+              className={`text-[15px] font-semibold transition-colors duration-200 ${
+                isActive("/blog") ? "text-indigo-600" : "text-slate-600 hover:text-indigo-600"
+              }`}
             >
-              <button
-                className="text-[15px] font-semibold text-slate-600 hover:text-indigo-600 transition-colors duration-200 flex items-center gap-1 py-2"
-              >
-                Resources <ChevronDown className="w-4 h-4" />
-              </button>
-              {isResourcesOpen && (
-                <div className="absolute top-full left-0 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl p-2 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
-                  <Link href="/blog?category=Success+Stories" className="block px-4 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-xl transition-colors">Success Stories</Link>
-                  <Link href="/blog" className="block px-4 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-xl transition-colors">Guides & Blog</Link>
-                  <Link href="/about" className="block px-4 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-xl transition-colors">Help Center</Link>
-                </div>
-              )}
-            </div>
+              Blogs
+            </Link>
 
             {session ? (
               <>
@@ -156,19 +144,15 @@ export const Navbar = () => {
           <Link href="/marketplace" onClick={toggleMenu} className="block text-lg font-semibold text-slate-800">Marketplace</Link>
           <Link href="/pricing" onClick={toggleMenu} className="block text-lg font-semibold text-slate-800">Pricing</Link>
           <Link href="/about" onClick={toggleMenu} className="block text-lg font-semibold text-slate-800">How It Works</Link>
-          <button 
-            onClick={() => setIsResourcesOpen(!isResourcesOpen)}
-            className="block text-lg font-semibold text-slate-800 w-full text-left flex justify-between items-center"
+          <Link
+            href="/blog"
+            onClick={toggleMenu}
+            className={`block text-lg font-semibold transition-colors duration-200 ${
+              isActive("/blog") ? "text-indigo-600" : "text-slate-800 hover:text-indigo-600"
+            }`}
           >
-            Resources <ChevronDown className="w-4 h-4" />
-          </button>
-          {isResourcesOpen && (
-            <div className="pl-4 space-y-2 py-1 border-l-2 border-slate-100">
-              <Link href="/blog?category=Success+Stories" onClick={toggleMenu} className="block text-base text-slate-600">Success Stories</Link>
-              <Link href="/blog" onClick={toggleMenu} className="block text-base text-slate-600">Guides & Blog</Link>
-              <Link href="/about" onClick={toggleMenu} className="block text-base text-slate-600">Help Center</Link>
-            </div>
-          )}
+            Blogs
+          </Link>
           
           {session ? (
             <>

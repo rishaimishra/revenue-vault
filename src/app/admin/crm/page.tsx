@@ -58,7 +58,7 @@ export default async function AdminCrmPage() {
           </div>
           <div>
             <span className="text-[9px] font-black text-indigo-600 uppercase tracking-widest leading-none bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100/30">
-              Operations Control
+              Operations Control • Interactive Board v2
             </span>
             <h1 className="text-2xl font-black text-slate-900 tracking-tight mt-1">
               Admin CRM Control Deck
