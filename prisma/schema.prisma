@@ -37,6 +37,19 @@ enum RequestStatus {
   REJECTED
 }
 
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -110,6 +123,10 @@ model User {
   adminNotes       CrmNote[]  @relation("AdminCrmNotes")
   crmTasks         CrmTask[]  @relation("UserCrmTasks")
   adminTasks       CrmTask[]  @relation("AdminCrmTasks")
+
+  // Support
+  supportTickets   SupportTicket[]
+  ticketMessages   TicketMessage[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -292,4 +309,28 @@ model CrmTask {
   status      String    @default("PENDING") // PENDING, COMPLETED, CANCELLED
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model SupportTicket {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   String
+  status    TicketStatus   @default(OPEN)
+  priority  TicketPriority @default(MEDIUM)
+  messages  TicketMessage[]
+
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model TicketMessage {
+  id        String         @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User           @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  content   String         @db.Text
+
+  createdAt DateTime       @default(now())
 }

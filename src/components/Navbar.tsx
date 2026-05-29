@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { User, LogOut, Menu, X, LayoutDashboard, Store, ShieldCheck, Lock } from "lucide-react";
+import { User, LogOut, Menu, X, LayoutDashboard, Store, ShieldCheck, Lock, LifeBuoy } from "lucide-react";
 import { useState } from "react";
 
 export const Navbar = () => {
@@ -107,6 +107,15 @@ export const Navbar = () => {
                   <User className="w-4 h-4" /> Profile
                 </Link>
 
+                <Link
+                  href="/dashboard/support"
+                  className={`text-[15px] font-semibold transition-colors flex items-center gap-1.5 ${
+                    isActive("/dashboard/support") ? "text-indigo-600" : "text-slate-600 hover:text-indigo-600"
+                  }`}
+                >
+                  <LifeBuoy className="w-4 h-4" /> Support
+                </Link>
+
                 <button
                   onClick={() => signOut()}
                   className="text-[15px] font-semibold text-rose-500 hover:text-rose-600 transition-colors flex items-center gap-1.5 cursor-pointer"
@@ -166,6 +175,7 @@ export const Navbar = () => {
                 <Link href="/dashboard/buyer" onClick={toggleMenu} className="block text-lg font-semibold text-slate-800">Dashboard</Link>
               )}
               <Link href="/profile" onClick={toggleMenu} className="block text-lg font-semibold text-slate-800">Profile</Link>
+              <Link href="/dashboard/support" onClick={toggleMenu} className="block text-lg font-semibold text-slate-800">Support</Link>
               <button
                 onClick={() => signOut()}
                 className="block text-lg font-semibold text-rose-500 w-full text-left"
