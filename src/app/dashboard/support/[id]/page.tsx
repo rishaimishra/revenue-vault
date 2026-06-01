@@ -29,7 +29,7 @@ async function getTicketDetails(id: string, userId: string) {
   return ticket;
 }
 
-export default async function UserTicketDetailPage({ params }: { params: { id: string } }) {
+export default async function UserTicketDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   
   if (!session || !session.user) {

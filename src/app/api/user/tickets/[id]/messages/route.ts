@@ -5,11 +5,12 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (!session?.user || !(session.user as any).id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -34,7 +35,8 @@ export async function GET(
     }
 
     // Allow admins to view any ticket
-    if (ticket.userId !== session.user.id && session.user.role !== "ADMIN") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (ticket.userId !== (session.user as any).id && (session.user as any).role !== "ADMIN") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -50,11 +52,12 @@ export async function GET(
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (!session?.user || !(session.user as any).id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -78,7 +81,8 @@ export async function POST(
     }
 
     // Allow admins to reply to any ticket
-    if (ticket.userId !== session.user.id && session.user.role !== "ADMIN") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (ticket.userId !== (session.user as any).id && (session.user as any).role !== "ADMIN") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -86,7 +90,8 @@ export async function POST(
     const message = await prisma.ticketMessage.create({
       data: {
         ticketId,
-        senderId: session.user.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        senderId: (session.user as any).id,
         content,
       },
       include: {
@@ -100,7 +105,8 @@ export async function POST(
     // or IN_PROGRESS if admin replied to a user.
     // Also update updatedAt.
     let newStatus = ticket.status;
-    if (session.user.role === "ADMIN" && ticket.status === "OPEN") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((session.user as any).role === "ADMIN" && ticket.status === "OPEN") {
       newStatus = "IN_PROGRESS";
     }
 

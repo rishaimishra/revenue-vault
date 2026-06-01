@@ -31,7 +31,7 @@ async function getTickets(status?: string) {
 export default async function AdminSupportDashboard({
   searchParams,
 }: {
-  searchParams: { status?: string };
+  searchParams: Promise<{ status?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   
@@ -40,7 +40,8 @@ export default async function AdminSupportDashboard({
     redirect("/");
   }
 
-  const currentStatus = searchParams.status || "ALL";
+  const resolvedSearchParams = await searchParams;
+  const currentStatus = resolvedSearchParams.status || "ALL";
   const tickets = await getTickets(currentStatus);
 
   return (

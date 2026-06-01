@@ -27,7 +27,7 @@ async function getTicketDetails(id: string) {
   });
 }
 
-export default async function AdminTicketDetailPage({ params }: { params: { id: string } }) {
+export default async function AdminTicketDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

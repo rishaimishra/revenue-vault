@@ -6,13 +6,15 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (!session?.user || !(session.user as any).id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const tickets = await prisma.supportTicket.findMany({
       where: {
-        userId: session.user.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        userId: (session.user as any).id,
       },
       orderBy: {
         updatedAt: "desc",
@@ -35,7 +37,8 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (!session?.user || !(session.user as any).id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -51,12 +54,14 @@ export async function POST(req: Request) {
 
     const ticket = await prisma.supportTicket.create({
       data: {
-        userId: session.user.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        userId: (session.user as any).id,
         subject,
         priority: priority || "MEDIUM",
         messages: {
           create: {
-            senderId: session.user.id,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            senderId: (session.user as any).id,
             content: initialMessage,
           }
         }
