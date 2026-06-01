@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { PaymentsTable } from "@/components/admin/PaymentsTable";
+import { PaymentsDashboardClient } from "@/components/admin/PaymentsDashboardClient";
 
 export const dynamic = "force-dynamic";
 
@@ -13,9 +13,6 @@ export default async function AdminPaymentsPage() {
   });
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Platform Payments</h1>
-      <PaymentsTable payments={recentPayments} />
-    </div>
+    <PaymentsDashboardClient initialPayments={recentPayments} />
   );
 }

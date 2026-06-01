@@ -20,6 +20,61 @@ export async function POST(req: Request) {
     const body = await req.json();
     const validatedData: ListingInput = listingSchema.parse(body);
 
+    // Fetch system pricing settings
+    const settingsList = await prisma.systemSetting.findMany({
+      where: {
+        key: {
+          in: ["listing_charge_enabled", "listing_charge_amount"],
+        },
+      },
+    });
+
+    const settings = settingsList.reduce((acc, curr) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {} as Record<string, string>);
+
+    const isEnabled = settings.listing_charge_enabled === "true";
+    const chargeAmount = parseInt(settings.listing_charge_amount || "500", 10);
+
+    if (isEnabled) {
+      const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = body;
+
+      if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
+        return NextResponse.json(
+          { message: "Monetization active: Payment details are required to complete listing submission." },
+          { status: 400 }
+        );
+      }
+
+      // Verify signature
+      const crypto = await import("crypto");
+      const generated_signature = crypto
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+        .update(razorpay_order_id + "|" + razorpay_payment_id)
+        .digest("hex");
+
+      if (generated_signature !== razorpay_signature) {
+        return NextResponse.json(
+          { message: "Payment verification failed. Invalid signature." },
+          { status: 400 }
+        );
+      }
+
+      // Record the payment
+      await prisma.payment.create({
+        data: {
+          userId: user.id,
+          amount: chargeAmount,
+          currency: "INR",
+          provider: "RAZORPAY",
+          providerId: razorpay_payment_id,
+          status: "success",
+          type: "listing_fee",
+        },
+      });
+    }
+
     const listing = await prisma.startupListing.create({
       data: {
         ...validatedData,

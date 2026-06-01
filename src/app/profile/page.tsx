@@ -219,35 +219,29 @@ export default async function ProfilePage() {
               {/* Account, Subscription & Settings rows */}
               <div className="border-t border-slate-100 pt-8">
                 <h2 className="text-lg font-bold text-slate-900 mb-5 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-indigo-500" /> Subscription & Account Details
+                  <Sparkles className="w-5 h-5 text-indigo-500" /> Platform Monetization & Account
                 </h2>
                 <div className="space-y-4">
                   
-                  {/* Subscription card */}
+                  {/* Subscription card replaced with Listing Pricing Info */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-gradient-to-r from-slate-50 to-slate-100/50 hover:from-slate-100/50 hover:to-slate-100 border border-slate-150 rounded-2xl transition-all gap-4">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-indigo-500 border border-slate-100 shadow-sm shrink-0">
                         <CreditCard className="w-5.5 h-5.5" />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-slate-900">Subscription Status</p>
+                        <p className="text-sm font-bold text-slate-900">Listing Price Model</p>
                         <p className="text-xs text-slate-500 mt-0.5">
-                          {user.isSubscribed 
-                            ? `Active: Premium ${user.subscriptionTier || "PRO"}` 
-                            : "Basic Account (Free Access)"}
+                          Pay-Per-Listing dynamic pricing model integrated via Razorpay.
                         </p>
                       </div>
                     </div>
                     <Link 
                       id="subscription-tier-btn"
                       href="/pricing" 
-                      className={`px-4.5 py-2 text-xs font-bold rounded-xl transition-all text-center whitespace-nowrap active:scale-98 cursor-pointer ${
-                        user.isSubscribed 
-                          ? "bg-slate-900 hover:bg-slate-800 text-white shadow-sm" 
-                          : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-100 hover:shadow-md"
-                      }`}
+                      className="px-4.5 py-2 text-xs font-bold rounded-xl transition-all text-center whitespace-nowrap active:scale-98 cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-100 hover:shadow-md"
                     >
-                      {user.isSubscribed ? "Manage Plan" : "Upgrade to Pro"}
+                      View Pricing
                     </Link>
                   </div>
 

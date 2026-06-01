@@ -16,6 +16,7 @@ export const AdminSidebar = () => {
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Listings", href: "/admin/listings", icon: FileText },
     { name: "Users", href: "/admin/users", icon: Users },
+    { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
   const supportItems = [

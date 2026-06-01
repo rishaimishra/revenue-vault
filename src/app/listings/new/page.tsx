@@ -99,6 +99,16 @@ function TextArea({ className = "", error, ...props }: TextAreaProps) {
   );
 }
 
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 export default function NewListingPage() {
   const { data: session, status } = useSession();
   const [step, setStep] = useState(1);
@@ -179,10 +189,81 @@ export default function NewListingPage() {
   const onSubmit = async (data: ListingInput) => {
     setIsLoading(true);
     try {
+      // 1. Fetch order details from `/api/payments/razorpay/order`
+      const orderRes = await fetch("/api/payments/razorpay/order", {
+        method: "POST",
+      });
+
+      if (!orderRes.ok) {
+        throw new Error("Failed to check platform monetization setup.");
+      }
+
+      const orderData = await orderRes.json();
+
+      let paymentDetails = {};
+
+      if (orderData.enabled) {
+        // Load Razorpay Script
+        const isLoaded = await loadRazorpayScript();
+        if (!isLoaded) {
+          alert("Razorpay payment gateway failed to load. Please check your internet connection.");
+          setIsLoading(false);
+          return;
+        }
+
+        // Open Razorpay Checkout Modal
+        const paymentResult = await new Promise<{
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          razorpay_signature: string;
+        } | null>((resolve) => {
+          const options = {
+            key: orderData.keyId,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            name: "RevenueVault",
+            description: "Startup Listing Submission Fee",
+            order_id: orderData.orderId,
+            handler: function (response: any) {
+              resolve({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+              });
+            },
+            prefill: {
+              name: session?.user?.name || "",
+              email: session?.user?.email || "",
+            },
+            theme: {
+              color: "#2563eb",
+            },
+            modal: {
+              ondismiss: function () {
+                resolve(null);
+              },
+            },
+          };
+          const rzp = new (window as any).Razorpay(options);
+          rzp.open();
+        });
+
+        if (!paymentResult) {
+          alert("Listing payment was cancelled. To publish your startup, please complete the payment.");
+          setIsLoading(false);
+          return;
+        }
+
+        paymentDetails = paymentResult;
+      }
+
       const res = await fetch("/api/listings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          ...paymentDetails,
+        }),
       });
       if (res.ok) {
         await res.json();
