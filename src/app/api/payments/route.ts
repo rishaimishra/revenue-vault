@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sendInvoiceEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -28,6 +29,11 @@ export async function POST(req: Request) {
         status: "success",
         type,
       },
+    });
+
+    // Send invoice email in the background
+    sendInvoiceEmail(payment.id).catch((err) => {
+      console.error("[EMAIL_ERROR] Failed to send subscription payment invoice:", err);
     });
 
     // If it's a subscription, update user's status

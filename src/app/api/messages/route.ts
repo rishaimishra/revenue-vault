@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sendMessageEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -46,6 +47,11 @@ export async function POST(req: Request) {
         receiverId,
         dealId,
       },
+    });
+
+    // Send email notification to recipient in the background
+    sendMessageEmail(message.id).catch((err) => {
+      console.error("[EMAIL_ERROR] Failed to send chat message email:", err);
     });
 
     // Update deal updatedAt timestamp

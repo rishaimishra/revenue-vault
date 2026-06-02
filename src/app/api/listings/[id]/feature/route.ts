@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sendInvoiceEmail } from "@/lib/email";
 
 export async function POST(
   req: Request,
@@ -37,7 +38,7 @@ export async function POST(
     });
 
     // Record the payment
-    await prisma.payment.create({
+    const payment = await prisma.payment.create({
       data: {
         userId: (session.user as any).id,
         amount: 29.00, // Featured listing fee
@@ -47,6 +48,11 @@ export async function POST(
         status: "success",
         type: "featured_listing",
       },
+    });
+
+    // Send invoice email in the background
+    sendInvoiceEmail(payment.id).catch((err) => {
+      console.error("[EMAIL_ERROR] Failed to send payment invoice for featured listing:", err);
     });
 
     return NextResponse.json(updatedListing);

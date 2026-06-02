@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ListingStatus } from "@prisma/client"; // 1. Import the generated Prisma Enum
+import { sendListingStatusEmail } from "@/lib/email";
 
 export async function PATCH(
   req: Request,
@@ -31,6 +32,15 @@ export async function PATCH(
         status: status as ListingStatus, 
         rejectionReason: status === ListingStatus.REJECTED ? rejectionReason : null 
       },
+    });
+
+    // Send email notification in the background
+    sendListingStatusEmail(
+      updatedListing.id,
+      updatedListing.status,
+      updatedListing.rejectionReason
+    ).catch((err) => {
+      console.error("[EMAIL_ERROR] Failed to send status email to seller:", err);
     });
 
     return NextResponse.json(updatedListing);

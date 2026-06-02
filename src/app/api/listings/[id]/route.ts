@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { listingSchema, ListingInput } from "@/lib/validations";
+import { sendListingStatusEmail } from "@/lib/email";
 
 export async function GET(
   req: Request,
@@ -89,6 +90,15 @@ export async function PUT(
     const updatedListing = await prisma.startupListing.update({
       where: { id },
       data: updateData,
+    });
+
+    // Send email notification in the background
+    sendListingStatusEmail(
+      updatedListing.id,
+      updatedListing.status,
+      updatedListing.rejectionReason
+    ).catch((err) => {
+      console.error("[EMAIL_ERROR] Failed to send status email to seller:", err);
     });
 
     return NextResponse.json(updatedListing);

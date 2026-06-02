@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { listingSchema, ListingInput } from "@/lib/validations";
+import { sendListingStatusEmail, sendInvoiceEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
       }
 
       // Record the payment
-      await prisma.payment.create({
+      const payment = await prisma.payment.create({
         data: {
           userId: user.id,
           amount: chargeAmount,
@@ -72,6 +73,11 @@ export async function POST(req: Request) {
           status: "success",
           type: "listing_fee",
         },
+      });
+
+      // Send invoice email in the background
+      sendInvoiceEmail(payment.id).catch((err) => {
+        console.error("[EMAIL_ERROR] Failed to send payment invoice for listing fee:", err);
       });
     }
 
@@ -92,6 +98,11 @@ export async function POST(req: Request) {
         assetsIncluded: validatedData.assetsIncluded || null,
         profit: validatedData.profit || 0,
       },
+    });
+
+    // Send email notification in the background
+    sendListingStatusEmail(listing.id, listing.status).catch((err) => {
+      console.error("[EMAIL_ERROR] Failed to send status email to seller:", err);
     });
 
     return NextResponse.json(listing);

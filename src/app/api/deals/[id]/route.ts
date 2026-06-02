@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sendListingStatusEmail } from "@/lib/email";
 
 export async function PATCH(
   req: Request,
@@ -43,9 +44,12 @@ export async function PATCH(
 
     // If deal is closed, mark the listing as SOLD
     if (status === "CLOSED") {
-      await prisma.startupListing.update({
+      const updatedListing = await prisma.startupListing.update({
         where: { id: deal.listingId },
         data: { status: "SOLD" }
+      });
+      sendListingStatusEmail(updatedListing.id, updatedListing.status).catch((err) => {
+        console.error("[EMAIL_ERROR] Failed to send status email to seller (SOLD):", err);
       });
     }
 
