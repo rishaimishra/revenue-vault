@@ -8,15 +8,16 @@ import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
+  const [agreed, setAgreed] = useState(false);
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
-      // @ts-ignore
+      // @ts-expect-error NextAuth session user type doesn't have isOnboarded property
       const isOnboarded = session.user.isOnboarded;
-      // @ts-ignore
+      // @ts-expect-error NextAuth session user type doesn't have role property
       const role = session.user.role;
       
       if (!isOnboarded) {
@@ -78,10 +79,32 @@ export default function SignInPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-xl shadow-blue-900/5 sm:rounded-3xl sm:px-10 border border-gray-100">
           <div className="space-y-6">
+            {/* Agreement Checkbox */}
+            <div className="flex items-start gap-3 p-3 bg-slate-50/50 rounded-2xl border border-slate-100 hover:bg-slate-50 transition-colors">
+              <input
+                id="agree-checkbox"
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-0.5 h-4.5 w-4.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
+              />
+              <label htmlFor="agree-checkbox" className="text-xs font-semibold text-gray-500 leading-relaxed cursor-pointer select-none">
+                I agree to RevenueVault&apos;s{" "}
+                <Link href="/terms" target="_blank" className="font-extrabold text-blue-600 hover:text-blue-500 transition-colors">
+                  Terms & Conditions
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" target="_blank" className="font-extrabold text-blue-600 hover:text-blue-500 transition-colors">
+                  Privacy Policy
+                </Link>
+                .
+              </label>
+            </div>
+
             <button
               onClick={handleGoogleSignIn}
-              disabled={isLoading !== null}
-              className="w-full flex justify-center items-center gap-3 py-3 px-4 border border-gray-200 rounded-2xl shadow-sm bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              disabled={isLoading !== null || !agreed}
+              className="w-full flex justify-center items-center gap-3 py-3 px-4 border border-gray-200 rounded-2xl shadow-sm bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
             >
               {isLoading === "google" ? (
                 <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
@@ -142,8 +165,8 @@ export default function SignInPage() {
 
               <button
                 type="submit"
-                disabled={isLoading !== null || !email}
-                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-lg shadow-blue-200 text-sm font-black text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:bg-blue-300"
+                disabled={isLoading !== null || !email || !agreed}
+                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-lg shadow-blue-200 text-sm font-black text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:bg-blue-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
               >
                 {isLoading === "email" ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -156,7 +179,11 @@ export default function SignInPage() {
 
           <div className="mt-10 pt-6 border-t border-gray-100 text-center">
             <p className="text-xs text-gray-400 font-medium italic">
-              By continuing, you agree to RevenueVault's Terms of Service and Privacy Policy.
+              Need help? Contact our support team at{" "}
+              <a href="mailto:support@revenuevault.com" className="text-blue-600 hover:underline">
+                support@revenuevault.com
+              </a>
+              .
             </p>
           </div>
         </div>
