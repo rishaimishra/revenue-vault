@@ -23,7 +23,7 @@ export const Navbar = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link href="/" className="hover:opacity-90 transition-opacity flex items-center">
-            <img src="/logo_reve.png" alt="RevenueVault" className="h-28 md:h-32 w-auto object-contain -my-8" />
+            <img src="/logo_reve.png" alt="RevenueVault" className="h-28 md:h-32 w-auto object-contain -my-8 logo-filter" />
           </Link>
 
           {/* Desktop Nav */}

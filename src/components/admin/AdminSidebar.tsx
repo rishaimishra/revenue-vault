@@ -39,7 +39,7 @@ export const AdminSidebar = () => {
           <img 
             src="/logo_reve.png" 
             alt="RevenueVault" 
-            className="h-20 w-auto object-contain shrink-0" 
+            className="h-20 w-auto object-contain shrink-0 logo-filter" 
           />
         </Link>
       </div>

@@ -190,7 +190,7 @@ export default async function AdminPage() {
           </div>
         </div>
 
-        {/* Active Deals / Escrows */}
+        {/* Active Deals / Negotiations */}
         <div className="bg-white/80 backdrop-blur-md p-6 rounded-3xl border border-slate-200/50 shadow-premium hover:shadow-2xl hover:shadow-indigo-500/5 transition-all duration-300 group relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
           <div className="flex justify-between items-start mb-4">

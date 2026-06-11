@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { ListingCard } from "@/components/ListingCard";
 import { SearchBar } from "@/components/marketplace/SearchBar";
 import { FilterSidebar } from "@/components/marketplace/FilterSidebar";
+import { PromoPopup } from "@/components/marketplace/PromoPopup";
 import Link from "next/link";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -125,6 +126,7 @@ export default async function MarketplacePage(props: {
 
   return (
     <div className="min-h-screen bg-slate-50/30 pb-20">
+      <PromoPopup />
       {/* Premium Hero Header Section with Dot Grid Background */}
       <div className="relative overflow-hidden border-b border-slate-100 bg-white bg-dot-grid py-12 md:py-16 mb-12">
         {/* Colorful gradient blurs for modern visual depth */}

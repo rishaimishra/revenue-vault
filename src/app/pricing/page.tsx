@@ -194,8 +194,8 @@ export default function PricingPage() {
           <div className="w-11 h-11 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-3.5 border border-emerald-100/50">
             <Shield className="w-5 h-5" />
           </div>
-          <h4 className="font-extrabold text-slate-800 text-xs mb-1">Secure Escrows</h4>
-          <p className="text-[10px] text-slate-400 leading-relaxed max-w-[200px]">Complete peace of mind. We use industry-standard security and trusted escrows for deal closure.</p>
+          <h4 className="font-extrabold text-slate-800 text-xs mb-1">Verified Listings</h4>
+          <p className="text-[10px] text-slate-400 leading-relaxed max-w-[200px]">Complete peace of mind. Every business undergoes extensive financial and background verification.</p>
         </div>
         <div className="flex flex-col items-center text-center p-4">
           <div className="w-11 h-11 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center mb-3.5 border border-rose-100/50">

@@ -37,15 +37,15 @@ export default async function Home() {
               <Zap className="w-3.5 h-3.5 fill-indigo-600 text-indigo-600 animate-pulse" /> The Modern Startup Marketplace
             </div>
             
-            <h1 className="text-5xl md:text-6xl xl:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.08]">
-              Buy and Sell Startups <br />
-              <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent italic font-serif font-semibold tracking-normal">
-                With Total Anonymity.
+            <h1 className="text-5xl md:text-6xl xl:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.1] flex flex-col gap-3">
+              <span>List, Connect, Deal.</span>
+              <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent italic font-serif font-semibold tracking-normal text-2xl md:text-3xl xl:text-4xl leading-normal">
+                Basically, we are the marketplace of connectors of buyers and sellers with the users authoritative.
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-slate-600 font-medium max-w-2xl leading-relaxed">
-              RevenueVault is the most secure platform to exit your startup or acquire your next venture. Verified financials, escrow-ready deals, and private communication.
+              RevenueVault is the most secure platform to exit your startup or acquire your next venture. Verified financials, verified business listings, and private communication.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -77,7 +77,7 @@ export default async function Home() {
                 <div className="w-6 h-6 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
                   <ShieldCheck className="w-4 h-4 stroke-[2.5]" />
                 </div>
-                <span>Escrow-Ready Deals</span>
+                <span>Verified Listings</span>
               </div>
               <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-2xl border border-slate-100/80 shadow-xs">
                 <div className="w-6 h-6 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
@@ -95,14 +95,14 @@ export default async function Home() {
             {/* Dashboard UI Card Mockup */}
             <div className="w-full max-w-[560px] bg-white rounded-3xl border border-slate-100 shadow-premium overflow-hidden transition-all duration-500 hover:shadow-2xl animate-float-subtle">
               {/* Window Header */}
-              <div className="bg-slate-50 border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+              <div className="bg-slate-50 border-b border-slate-100 px-4 sm:px-6 py-4 flex items-center justify-between">
                 <div className="flex gap-2">
                   <span className="w-3 h-3 rounded-full bg-rose-400"></span>
                   <span className="w-3 h-3 rounded-full bg-amber-400"></span>
                   <span className="w-3 h-3 rounded-full bg-emerald-400"></span>
                 </div>
                 {/* Search Bar Mockup */}
-                <div className="w-52 h-7 bg-slate-100 rounded-full flex items-center px-3 gap-2">
+                <div className="w-28 sm:w-52 h-7 bg-slate-100 rounded-full flex items-center px-3 gap-2">
                   <Search className="w-3.5 h-3.5 text-slate-400" />
                   <span className="text-[10px] text-slate-400 font-medium">Search startups...</span>
                 </div>
@@ -115,7 +115,7 @@ export default async function Home() {
               {/* Dashboard Layout */}
               <div className="grid grid-cols-12 h-[380px]">
                 {/* Mini Sidebar */}
-                <div className="col-span-3 bg-slate-50/50 border-r border-slate-100 p-4 space-y-4">
+                <div className="hidden md:block col-span-3 bg-slate-50/50 border-r border-slate-100 p-4 space-y-4">
                   <div className="text-[10px] font-extrabold text-indigo-600/80 uppercase tracking-widest px-2">RevenueVault</div>
                   <nav className="space-y-1.5">
                     <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-indigo-50/70 text-indigo-600 font-bold text-xs cursor-pointer">
@@ -131,7 +131,7 @@ export default async function Home() {
                 </div>
 
                 {/* Dashboard Main Content */}
-                <div className="col-span-9 p-5 space-y-4 overflow-y-auto">
+                <div className="col-span-12 md:col-span-9 p-5 space-y-4 overflow-y-auto">
                   <div className="flex justify-between items-center">
                     <h4 className="text-sm font-extrabold text-slate-800">Marketplace Overview</h4>
                     <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-1">
@@ -161,7 +161,7 @@ export default async function Home() {
                   {/* Listings Table & Deal Flow Chart split */}
                   <div className="grid grid-cols-12 gap-3">
                     {/* Left: Recent Listings */}
-                    <div className="col-span-7 bg-slate-50 p-3 rounded-2xl border border-slate-100/50 space-y-2">
+                    <div className="col-span-12 md:col-span-7 bg-slate-50 p-3 rounded-2xl border border-slate-100/50 space-y-2">
                       <div className="flex justify-between items-center text-[10px] font-bold">
                         <span className="text-slate-800">Recent Listings</span>
                         <span className="text-indigo-600 cursor-pointer hover:underline">View all</span>
@@ -184,7 +184,7 @@ export default async function Home() {
                             </div>
                             <div className="text-right">
                               <p className="text-[9px] font-extrabold text-slate-800">{row.price}</p>
-                              <p className="text-[7px] text-emerald-600 font-bold">Escrow</p>
+                              <p className="text-[7px] text-emerald-600 font-bold">Verified</p>
                             </div>
                           </div>
                         ))}
@@ -192,7 +192,7 @@ export default async function Home() {
                     </div>
 
                     {/* Right: Deal Flow & Profit */}
-                    <div className="col-span-5 flex flex-col gap-3">
+                    <div className="col-span-12 md:col-span-5 flex flex-col gap-3">
                       {/* Deal Flow Chart Card */}
                       <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100/50 flex-1 flex flex-col justify-between">
                         <div className="flex justify-between items-start">
@@ -368,8 +368,8 @@ export default async function Home() {
                 color: "bg-blue-50 text-blue-600 border-blue-100"
               },
               {
-                title: "Escrow-Ready Deals",
-                desc: "Secure transactions with built-in escrow integration.",
+                title: "Verified Business Listings",
+                desc: "Every listed business undergoes rigorous background and financial verification.",
                 icon: <ShieldCheck className="w-5 h-5" />,
                 color: "bg-indigo-50 text-indigo-600 border-indigo-100"
               },

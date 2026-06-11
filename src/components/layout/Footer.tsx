@@ -13,7 +13,7 @@ export const Footer = () => {
           {/* Brand Column */}
           <div className="md:col-span-4 space-y-6">
             <Link href="/" className="hover:opacity-90 transition-opacity inline-block">
-              <img src="/logo_reve.png" alt="RevenueVault" className="h-28 md:h-32 w-auto object-contain -ml-8 -my-6" />
+              <img src="/logo_reve.png" alt="RevenueVault" className="h-28 md:h-32 w-auto object-contain -ml-8 -my-6 logo-filter" />
             </Link>
             <p className="text-slate-500 text-sm font-medium leading-relaxed max-w-sm">
               The world&apos;s most secure and anonymous marketplace for buying and selling startups. Built for founders, by founders.

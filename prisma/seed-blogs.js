@@ -126,7 +126,7 @@ Within 48 hours, he received **12 access requests** from high-trust verified buy
 
 > "The anonymous listing feature saved me," Marcus says. "My competitors didn't know I was selling, my clients didn't panic, and I could negotiate safely behind the vault."
 > 
-> A private equity firm acquired the SaaS for a clean 4.1x ARR multiple, closing the deal in just 28 days via our secure Escrow flow.`,
+> A private equity firm acquired the SaaS for a clean 4.1x ARR multiple, closing the deal in just 28 days via our secure verified listing flow.`,
     },
     {
       title: "Top 5 Red Flags Buyers Look for During M&A Due Diligence",
